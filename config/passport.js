@@ -7,7 +7,7 @@ const ExtractJwt=require('passport-jwt').ExtractJwt;
 require('dotenv').config()
 
 const options = {
-    jwtFromRequest:ExtractJwt.fromHeader('authorization'),
+    jwtFromRequest:ExtractJwt.fromHeader('auth-token'),
     secretOrKey:process.env.JWT_SECRET,
 };
 const strategy=new JwtStrategy(options,(payload,done)=>

@@ -3,8 +3,8 @@ const jsonwebtoken = require('jsonwebtoken');
 const fs = require('fs');
 const moment=require('moment')
 const AWS = require('aws-sdk');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
+const path=require("path")
+
 const s3 = new AWS.S3({
   accessKeyId: process.env.ACCESS_KEY,
   secretAccessKey: process.env.ACCESS_SECRET,
@@ -12,20 +12,7 @@ const s3 = new AWS.S3({
 });
 
 // Upload a file to S3
-const upload = multer({
-    storage: multerS3({
-      s3: s3,
-      acl: 'public-read',
-      bucket: process.env.BUCKET,
-      metadata: function (req, file, cb) {
-        cb(null, {fieldName: file.fieldname});
-      },
-      key: function (req, file, cb) {
-        cb(null, Date.now().toString())
-      }
-    })
-    
-  })
+
 function validPassword(password,hash) {
     return bcrypt.compareSync(password,hash);
 }
@@ -36,6 +23,53 @@ function genPassword(password) {
     
 }
 
+async function uploadImage(base64string){
+const s3 = new AWS.S3({
+    accessKeyId: process.env.ACCESS_KEY,
+    secretAccessKey: process.env.ACCESS_SECRET,
+    region: process.env.REGION
+  });
+  const bufferImage = Buffer.from(base64string.split(";base64,")[1], "base64");
+  const tempPath = path.join(__dirname, "temp.png");
+  const filename=`${Date.now().toString()}.png`
+  fs.writeFileSync(tempPath, bufferImage);
+  const params = {
+    Bucket: process.env.BUCKET,
+    Key: filename,
+    Body: fs.createReadStream(tempPath),
+    ContentType: "image/png",
+  };
+
+  // Wrap s3.upload() function with a promise
+  const uploadPromise = () => {
+    return new Promise((resolve, reject) => {
+      s3.upload(params, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  };
+
+  // Use await to wait for the promise to resolve
+  const data = await uploadPromise();
+  s3.putObjectAcl({
+    Bucket: process.env.BUCKET,
+    Key: filename,
+    ACL: 'public-read'
+}, function(err, data) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(`Object ACL set to public-read`);
+    }
+});
+  console.log(`File uploaded successfully to ${data.Location}`);
+  fs.unlinkSync(tempPath);
+  return data.Location
+}
 
 
 function issueJWT(address) {
@@ -54,3 +88,4 @@ function issueJWT(address) {
 module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
+module.exports.uploadImage=uploadImage;
