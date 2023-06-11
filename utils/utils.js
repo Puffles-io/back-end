@@ -39,7 +39,7 @@ async function uploadImage(base64string){
   const file=await getFilesFromPath(tempPath)
   const cid=await storage.put(file)
   fs.unlinkSync(tempPath);
-  return cid
+  return {cid,filename}
   
   // const params = {
   //   Bucket: process.env.BUCKET,
