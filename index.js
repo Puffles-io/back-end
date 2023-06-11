@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+const cookieParser = require('cookie-parser')
 const passport = require('passport');
 
 require('dotenv').config();
@@ -12,6 +12,7 @@ require('./config/database');
 
 require('./config/passport')(passport);
 app.use(cors())
+app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use(express.json({ limit: '200mb' }));
