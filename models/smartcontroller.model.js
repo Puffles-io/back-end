@@ -11,7 +11,9 @@ const smartcontractSchema=new Schema({
     price:{type:String,required:true},
     max_token_per_wallet:{type:Number,required:true},
     wallet_address:{type:String,required:true},
-    recipient_address:{type:String,required:true}
+    recipient_address:{type:String,required:true},
+    timestamp:{type:Date,default:new Date()},
+    ip:{type:String,required:true}
     })
 const SmartContract=mainDBConnection.model('smartcontract',smartcontractSchema)
 module.exports={SmartContract}

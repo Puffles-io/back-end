@@ -5,12 +5,8 @@ const knex = require("./database");
 const JwtStrategy=require('passport-jwt').Strategy
 const ExtractJwt=require('passport-jwt').ExtractJwt;
 require('dotenv').config()
-const cookieExtractor = function (req) {
-    let token = req.cookies["web3-details"];
-    return token;
-};
 const options = {
-    jwtFromRequest:cookieExtractor,
+    jwtFromRequest:ExtractJwt.fromHeader("auth-token"),
     secretOrKey:process.env.JWT_SECRET,
 };
 const strategy=new JwtStrategy(options,(payload,done)=>

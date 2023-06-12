@@ -8,7 +8,8 @@ const pagesSchema=new Schema({
     sale_date:{type:String,required:true},
     supply:{type:Number,required:true},
     limit_per_wallet:{type:Number,required:true},
-    price:{type:Number,required:true}
+    price:{type:Number,required:true},
+    
     })
 const Pages=mainDBConnection.model('pages',pagesSchema)
 module.exports={Pages}
