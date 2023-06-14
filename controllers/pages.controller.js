@@ -1,4 +1,5 @@
 const {Pages}=require("../models/pages.model")
+const error=require('../services/errorFormater');
 exports.pages=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
@@ -12,6 +13,7 @@ exports.pages=async (req,res)=>{
             }
             }
         catch(err){
+            error(err,req);
             res.status(500).json({message:"Error: "+err.toString()})
         }
     })

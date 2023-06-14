@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
-
+const fs = require('fs');
+const morgan=require('morgan');
 require('dotenv').config();
 
 
@@ -15,7 +16,10 @@ app.use(passport.initialize());
 
 app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({extended: true}));
-
+app.use(morgan(':method , :url , :status , :res[content-length] bytes , :response-time ms , :remote-addr ',
+{
+    stream: fs.createWriteStream('./access.log', {flags: 'a'})
+}));
 
 require('./routes/login.routes.js')(app);
 require('./routes/nft.routes.js')(app);

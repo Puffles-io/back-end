@@ -2,16 +2,16 @@ const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken');
 const fs = require('fs');
 const moment=require('moment')
-const AWS = require('aws-sdk');
+// const AWS = require('aws-sdk');
 const path=require("path")
 const os=require('os')
 const {Web3Storage,getFilesFromPath}=require('web3.storage')
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.ACCESS_KEY,
-  secretAccessKey: process.env.ACCESS_SECRET,
-  region: process.env.REGION
-});
+// const s3 = new AWS.S3({
+//   accessKeyId: process.env.ACCESS_KEY,
+//   secretAccessKey: process.env.ACCESS_SECRET,
+//   region: process.env.REGION
+// });
 
 // Upload a file to S3
 

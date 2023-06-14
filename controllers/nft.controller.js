@@ -1,5 +1,6 @@
 const {NFT}=require("../models/nft.model")
 const {uploadImage,uploadJSON}=require('../utils/utils')
+const error=require('../services/errorFormater');
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
@@ -19,7 +20,7 @@ exports.upload_v1=async (req,res)=>{
             }
         }
         catch(err){
-            console.log("err: ",err)
+            error(err,req);
             res.status(500).json({message:"Error: "+err.toString()})
         }
     })
@@ -40,7 +41,7 @@ exports.get_nfts=async (req,res)=>{
             }
         }
         catch(err){
-            console.log("err: ",err)
+            error(err,req);
             res.status(500).json({message:"Err: "+err})
         }
     })

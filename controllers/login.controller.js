@@ -1,4 +1,5 @@
 const utils=require('../utils/utils')
+const error=require('../services/errorFormater');
 exports.register=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
@@ -12,9 +13,8 @@ exports.register=async (req,res)=>{
             }
             }
         catch(err){
-            console.log(err)
-            res.status(500).json({message:"Error: "+err})
-            
+            error(err,req);
+            res.status(500).json({message:"Error: "+err})  
         }
     })
 }
