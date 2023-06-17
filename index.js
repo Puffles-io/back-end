@@ -7,7 +7,9 @@ require('dotenv').config();
 
 
 var app = express();
-
+const MongooseConnection=require('./config/database');
+const dbConnect=new MongooseConnection();
+dbConnect.connect().then(()=>{console.log('database connected')}).catch((err)=>{console.log(err)});
 require('./config/database');
 
 require('./config/passport')(passport);
@@ -25,6 +27,7 @@ require('./routes/login.routes.js')(app);
 require('./routes/nft.routes.js')(app);
 require('./routes/pages.routes.js')(app);
 require('./routes/smartcontract.routes.js')(app)
+app.use('/existence',require('./routes/data_existence.routes'))
 /**
  * -------------- SERVER ----------------
  */

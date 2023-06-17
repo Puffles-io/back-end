@@ -1,6 +1,16 @@
-const mongoose = require('mongoose')
-require('dotenv').config();
-console.log("MongoDB URL: ",process.env.MONGODB_URL)
-const mainDBConnection = mongoose.createConnection(process.env.MONGODB_URL);
-
-module.exports = { mainDBConnection};
+const mongoose = require("mongoose");
+class MongooseConnection
+{
+    async connect()
+    {
+        return new Promise(async(resolve,reject)=>{
+            try {
+                await mongoose.connect(String(process.env.MONGODB_URL));
+                resolve(true);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+}
+module.exports=MongooseConnection;

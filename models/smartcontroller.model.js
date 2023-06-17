@@ -1,6 +1,5 @@
 const mongoose=require('mongoose')
 require('dotenv').config();
-const { mainDBConnection } = require('../config/database');
 const Schema=mongoose.Schema
 
 const smartcontractSchema=new Schema({
@@ -15,5 +14,5 @@ const smartcontractSchema=new Schema({
     timestamp:{type:Date,default:new Date()},
     ip:{type:String,required:true}
     })
-const SmartContract=mainDBConnection.model('smartcontract',smartcontractSchema)
+const SmartContract=mongoose.model('smartcontract',smartcontractSchema)
 module.exports={SmartContract}

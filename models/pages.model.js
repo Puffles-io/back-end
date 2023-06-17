@@ -1,6 +1,5 @@
 const mongoose=require('mongoose')
 require('dotenv').config();
-const { mainDBConnection } = require('../config/database');
 const Schema=mongoose.Schema
 
 const pagesSchema=new Schema({
@@ -11,5 +10,5 @@ const pagesSchema=new Schema({
     price:{type:Number,required:true},
     
     })
-const Pages=mainDBConnection.model('pages',pagesSchema)
+const Pages=mongoose.model('pages',pagesSchema)
 module.exports={Pages}
