@@ -14,7 +14,7 @@ exports.upload_v1=async (req,res)=>{
                 let {cid,filename}= await uploadImage(req.body.file_url);
                 let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
                 let metadata_url=await uploadJSON(metadata)
-                let nft=new NFT({cid:metadata_url,address:req.user.address,ip:req.connection.remoteAddress})
+                let nft=new NFT({cid:metadata_url,address:req.user.address,ip:req.connection.remoteAddress,title:req.body.title})
                 await nft.save()
                 res.status(200).json({status:true,message:"NFT saved successfully"})
             }

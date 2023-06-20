@@ -4,6 +4,7 @@ const Schema=mongoose.Schema
 
 const nftSchema=new Schema({
     cid:{type:String,required:true},
+    title:{type:String,required:true},
     address:{type:String,
     required:true},
     timestamp:{type:Date,default:new Date()},

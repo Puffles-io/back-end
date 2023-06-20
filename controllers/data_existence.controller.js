@@ -1,4 +1,4 @@
-const {SmartContract}=require('../models/smartcontroller.model');
+const {NFT}=require('../models/nft.model');
 const error=require('../services/errorFormater');
 class DataExistence
 {
@@ -7,7 +7,7 @@ class DataExistence
         try 
         {
             const {name}=req.params;
-            const data=await SmartContract.find({name:name});
+            const data=await NFT.find({title:name});
             res.json(data.length>0);
         } 
         catch (err) 
