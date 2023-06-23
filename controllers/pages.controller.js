@@ -3,7 +3,7 @@ const error=require('../services/errorFormater');
 exports.pages=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.address||req.body.sale_date||req.body.supply||req.body.limit_per_wallet||req.body.price)){
+            if(!Boolean(req.body.address||req.body.sale_date||req.body.supply||req.body.limit_per_wallet||req.body.price||req.body.Url_string)){
                 res.status(200).json({status:false,message:"Missing details"})
             }
             else{
