@@ -95,7 +95,7 @@ async function uploaddata(address,data){
         console.log(`Object ACL set to public-read`);
     }
 });
-fs.writeFileSync(tempFilePath, JSON.stringify([{title:data.title,description:data.description,detailed_reveal:data.detailed_reveal,file:filedata.Location}]));
+fs.writeFileSync(tempFilePath, JSON.stringify([{id:data.id,title:data.title,description:data.description,detailed_reveal:data.detailed_reveal,file:filedata.Location}]));
 const jsondata=await jsonuploadPromise();
 s3.putObjectAcl({
   Bucket: process.env.BUCKET,
@@ -174,7 +174,7 @@ async function updatedata(address, data) {
   };
 
   const filedata = await uploadPromise();
-  jsonData.push({title:data.title,description:data.description,detailed_reveal:data.detailed_reveal,file:filedata.Location})
+  jsonData.push({id:data.id,title:data.title,description:data.description,detailed_reveal:data.detailed_reveal,file:filedata.Location})
   const updatedparams = {
     Bucket: process.env.BUCKET,
     Key: `${address.slice(0,10)}.json`,

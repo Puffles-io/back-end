@@ -12,21 +12,19 @@ exports.upload_v1=async (req,res)=>{
             }
             else{
                 if((await UserCid.find({address:req.user.address})).length){
-                    let result=await updatedata(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,base64string:req.body.file_url})
-                    
                     let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
-                    await nft.save()
+                    let nftData=await nft.save()
+                    let result=await updatedata(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,base64string:req.body.file_url,id:nftData._id})
                     res.status(200).json({status:result,message:"NFT saved successfully"})
                     
                 }
                 else{
-                    
-                    let result= await uploaddata(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,base64string:req.body.file_url})
+                    let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
+                    let nftData=await nft.save()    
+                    let result= await uploaddata(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,base64string:req.body.file_url,id:nftData._id})
                     
                     let data=new UserCid({address:req.user.address,url:url})
                     await data.save()
-                    let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
-                    await nft.save()
                     res.status(200).json({status:result,message:"NFT saved successfully"})
                     
                 }
@@ -51,7 +49,7 @@ exports.get_nfts=async (req,res)=>{
             let metadata=await UserCid.find({address:req.user.address})
             console.log("metadata: ",metadata)
             if(metadata.length==0){
-                res.status(200).json({status:true,url:[]})
+                res.status(200).json({status:true,url:false})
             }
             else{
                 res.status(200).json({status:true,url:metadata[0].url})
@@ -60,6 +58,17 @@ exports.get_nfts=async (req,res)=>{
         catch(err){
             error(err,req);
             res.status(500).json({message:"Err: "+err})
+        }
+    })
+}
+exports.update_nft=async (req,res)=>{
+    return new ProcessingInstruction(async function(resolve,reject){
+        try{
+
+        }
+        catch(err){
+            error(err,req);
+            res.status(500).json({message:"Err"+err})
         }
     })
 }
