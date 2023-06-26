@@ -3,12 +3,16 @@ require('dotenv').config();
 const Schema=mongoose.Schema
 
 const nftSchema=new Schema({
-    cid:{type:String,required:true},
     title:{type:String,required:true},
     address:{type:String,
     required:true},
     timestamp:{type:Date,default:new Date()},
     ip:{type:String,required:true}
 })
+const usercidSchema=new Schema({
+    address:{type:String,required:true},
+    url:{type:String,required:true}
+})
 const NFT=mongoose.model('nft',nftSchema)
-module.exports={NFT}
+const UserCid=mongoose.model('usercid',usercidSchema)
+module.exports={NFT,UserCid}

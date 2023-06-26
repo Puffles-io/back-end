@@ -1,5 +1,5 @@
-const {NFT}=require("../models/nft.model")
-const {uploadImage,uploadJSON}=require('../utils/utils')
+const {NFT,UserCid}=require("../models/nft.model")
+const {uploaddata,updatedata}=require('../utils/utils')
 const error=require('../services/errorFormater');
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
@@ -11,15 +11,35 @@ exports.upload_v1=async (req,res)=>{
                 res.status(200).json({status:false,message:"Detailed reveal is not defined"})
             }
             else{
-                let {cid,filename}= await uploadImage(req.body.file_url);
-                let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
-                let metadata_url=await uploadJSON(metadata)
-                let nft=new NFT({cid:metadata_url,address:req.user.address,ip:req.connection.remoteAddress,title:req.body.title})
-                await nft.save()
-                res.status(200).json({status:true,message:"NFT saved successfully"})
+                if((await UserCid.find({address:req.user.address})).length){
+                    let result=await updatedata(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,base64string:req.body.file_url})
+                    
+                    let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
+                    await nft.save()
+                    res.status(200).json({status:result,message:"NFT saved successfully"})
+                    
+                }
+                else{
+                    
+                    let result= await uploaddata(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,base64string:req.body.file_url})
+                    
+                    let data=new UserCid({address:req.user.address,url:url})
+                    await data.save()
+                    let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
+                    await nft.save()
+                    res.status(200).json({status:result,message:"NFT saved successfully"})
+                    
+                }
+                // let {cid,filename}= await uploadImage(req.body.file_url);
+                // let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
+                // let metadata_url=await uploadJSON(metadata)
+                // let nft=new NFT({cid:metadata_url,address:req.user.address,ip:req.connection.remoteAddress,title:req.body.title})
+                // await nft.save()
+                // res.status(200).json({status:true,message:"NFT saved successfully"})
             }
         }
         catch(err){
+            console.log("error: ",err)
             error(err,req);
             res.status(500).json({message:"Error: "+err.toString()})
         }
@@ -28,16 +48,13 @@ exports.upload_v1=async (req,res)=>{
 exports.get_nfts=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            let metadata=await NFT.find({address:req.user.address})
+            let metadata=await UserCid.find({address:req.user.address})
+            console.log("metadata: ",metadata)
             if(metadata.length==0){
-                res.status(200).json({status:true,cids:[]})
+                res.status(200).json({status:true,url:[]})
             }
             else{
-                let cids=[]
-                for(let ids of metadata){
-                    cids.push(ids.cid)
-                }
-                res.status(200).json({status:true,cids:cids})
+                res.status(200).json({status:true,url:metadata[0].url})
             }
         }
         catch(err){
