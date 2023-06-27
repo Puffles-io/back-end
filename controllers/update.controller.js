@@ -1,6 +1,6 @@
 const DataRefine=require('../services/DataRefine.service');
 const S3=require('../utils/s3');
-const NFT=require('../models/nft.model');
+const {NFT}=require('../models/nft.model');
 const error=require('../services/errorFormater');
  class Update
 {
@@ -11,21 +11,26 @@ const error=require('../services/errorFormater');
                 const data=DataRefine.prototype.removeNullData(req.body);
                 //* update the data
                 let Filekey,PlaceHolderKey;
+                let json=await S3.prototype.getJson(req.user.address,data.id)
                 if(data.file_url)
                 {
                     Filekey=await S3.prototype.uploadImage(data.file_url);
-                    await S3.prototype.deleteImage(data.filename);
+                    await S3.prototype.deleteImage(json.filename);
                     data.filename=Filekey.filename;
-                    data.file=Filekey.location;
+                    data.file_url=Filekey.location;
                 }
                 if(data.placeholder_image)
                 {
                     PlaceHolderKey=await S3.prototype.uploadImage(data.placeholder_image);
-                    await S3.prototype.deleteImage(data.placeholdername);
-                    data.placeholdername=PlaceHolderKey.filename;
-                    data.placeholder=PlaceHolderKey.location;
+                    await S3.prototype.deleteImage(json.placeholder_file);
+                    console.log("deleted image")
+                    delete data.placeholder_image
+                    data.placeholder_file=PlaceHolderKey.filename;
+                    data.placeholder_url=PlaceHolderKey.location;
                 }
-                await S3.prototype.upadateJson(req.user.address,data);
+                console.log("data: ",data)
+                await S3.prototype.updateJson(req.user.address,data);
+                console.log("updated json file")
                 if(data.title)
                 {
                     NFT.findOne({_id:data.id}).then(async (userData)=>
