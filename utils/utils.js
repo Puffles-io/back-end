@@ -35,17 +35,6 @@ async function uploaddata(address,data){
   const tempFilePath = path.join(__dirname,`${address.slice(0,10)}.json`);
   
    fs.writeFileSync(tempPath, bufferImage);
-  // const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
-  // const file=await getFilesFromPath(tempDir)
-  // //const metadata=await getFilesFromPath(tempFilePath)
-  // const cid=await storage.put(file)
-  // console.log("checking 4")
-  // fs.unlinkSync(tempPath);
-  // fs.unlinkSync(tempFilePath);
-  // console.log("uploaddata function called")
-  // console.log("cid: ",cid)
-  // return cid
-  
   const params = {
     Bucket: process.env.BUCKET,
     Key: filename,
