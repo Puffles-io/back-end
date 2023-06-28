@@ -22,8 +22,9 @@ const error=require('../services/errorFormater');
                 if(data.placeholder_image)
                 {
                     PlaceHolderKey=await S3.prototype.uploadImage(data.placeholder_image);
-                    await S3.prototype.deleteImage(json.placeholder_file);
-                    console.log("deleted image")
+                    if(data.placeholder_image.length){
+                        await S3.prototype.deleteImage(json.placeholder_file);
+                    }
                     delete data.placeholder_image
                     data.placeholder_file=PlaceHolderKey.filename;
                     data.placeholder_url=PlaceHolderKey.location;

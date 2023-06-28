@@ -13,10 +13,17 @@ exports.upload_v1=async (req,res)=>{
             }
             else{
                 let filedata=await S3.prototype.uploadImage(req.body.file_url)
-                    let placeholderdata=await S3.prototype.uploadImage(req.body.placeholder_image)
+                    let placeholderdata
                     let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
                     let nftData=await nft.save()
+                    if(req.body.placeholder_image.length){
+                        placeholderdata=await S3.prototype.uploadImage(req.body.placeholder_image)
+                    }
+                    else{
+                        placeholderdata={filename:"",location:""}
+                    }
                 if((await UserCid.find({address:req.user.address})).length){
+                    
                     console.log("placeholderData: ",placeholderdata)
                     let result=await S3.prototype.pushtoJson(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,filename:filedata.filename,file_url:filedata.location,placeholder_file:placeholderdata.filename,placeholder_url:placeholderdata.location,id:nftData._id})
                     res.status(200).json({status:result,message:"NFT saved successfully"})
@@ -49,7 +56,7 @@ exports.get_nfts=async (req,res)=>{
             let metadata=await UserCid.find({address:req.user.address})
             console.log("metadata: ",metadata)
             if(metadata.length==0){
-                res.status(200).json({status:true,url:false})
+                res.status(200).json({status:true,url:[]})
             }
             else{
                 res.status(200).json({status:true,url:metadata[0].url})
