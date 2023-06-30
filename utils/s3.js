@@ -33,6 +33,74 @@ class S3Methods
             }
         })
     }
+    async getJsonArray(address)
+    {
+      return new Promise(async (resolve,reject)=>
+      {
+        try 
+        {
+          const jsonparams = {
+            Bucket: process.env.BUCKET,
+            Key: `${address.slice(0, 10)}.json`,
+          };
+          s3.getObject(jsonparams,(err,data)=>
+          {
+              if(err)
+              {
+                reject(err);
+              }
+              else
+              {
+                resolve(data);
+              }
+          })
+        } catch (error) 
+        {
+          reject(error);
+        }
+      })
+    }
+    async updateJsonArray(address,jsonArray)
+    {
+      return new Promise(async (resolve,reject)=>
+      {
+          try 
+          {
+            const updatedparams = {
+              Bucket: process.env.BUCKET,
+              Key: `${address.slice(0,10)}.json`,
+              Body: JSON.stringify(jsonArray),
+              ContentType: "application/json",
+            };
+            s3.upload(updatedparams,(err,data)=>
+            {
+                if(err)
+                {
+                    reject(err);
+                }
+                else
+                {
+                    s3.putObjectAcl({
+                        Bucket: process.env.BUCKET,
+                        Key: `${address.slice(0,10)}.json`,
+                        ACL: 'public-read'
+                      }, function(err, data) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log(`Object ACL set to public-read`);
+                        }
+                      });
+                    resolve({status:true});
+                }
+            })
+          } 
+          catch (error) 
+          {
+            reject(error);
+          }
+      })
+    }
     async uploadImage(base64)
     {
         return new Promise(async(resolve,reject)=>

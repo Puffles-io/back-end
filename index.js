@@ -28,6 +28,7 @@ require('./routes/nft.routes.js')(app);
 require('./routes/pages.routes.js')(app);
 require('./routes/smartcontract.routes.js')(app)
 app.use('/existence',require('./routes/data_existence.routes'))
+app.use('/delete',require('./routes/delete.routes'));
 app.use('/update',require('./routes/update.routes'));
 /**
  * -------------- SERVER ----------------
