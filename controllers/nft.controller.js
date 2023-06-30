@@ -26,13 +26,13 @@ exports.upload_v1=async (req,res)=>{
                     
                     console.log("placeholderData: ",placeholderdata)
                     let result=await S3.prototype.pushtoJson(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,filename:filedata.filename,file_url:filedata.location,placeholder_file:placeholderdata.filename,placeholder_url:placeholderdata.location,id:nftData._id})
-                    res.status(200).json({status:result,message:"NFT saved successfully"})
+                    res.status(200).json({status:result,id:nftData._id})
                 }
                 else{
                     let result= await S3.prototype.uploadJson(req.user.address,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,filename:filedata.filename,file_url:filedata.location,placeholder_file:placeholderdata.filename,placeholder_url:placeholderdata.location,id:nftData._id})
                     let data=new UserCid({address:req.user.address,url:result.url})
                     await data.save()
-                    res.status(200).json({status:result.status,message:"NFT saved successfully"})
+                    res.status(200).json({status:result.status,id:nftData._id})
                     
                 }
                 // let {cid,filename}= await uploadImage(req.body.file_url);
