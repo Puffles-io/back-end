@@ -6,6 +6,7 @@ class DeleteNft
         try
         {
             let jsonArray=await S3.prototype.getJsonArray(req.user.address);
+            jsonArray=JSON.parse(jsonArray.Body.toString())
             let index=0;
             for(let i of jsonArray)
             {
@@ -25,6 +26,7 @@ class DeleteNft
         }
         catch(err)
         {
+            console.log(err)
             res.status(500).send("internal server error");
         }
     }

@@ -7,6 +7,7 @@ const pagesSchema=new Schema({
     Url_string:{type:String,required:true},
     theme: {type:String,enum:['classic','modern'],required:true},
     bg_image:{type:String,required:true},
+    filename:{type:String,required:true},
     timestamp:{type:Date,default:new Date()},
     ip:{type:String,required:true}
     })

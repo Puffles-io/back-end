@@ -10,7 +10,7 @@ exports.smartcontract=async (req,res)=>{
             req.body.wallet_address=req.user.address    
             let contract=new SmartContract(req.body)
             let result=await contract.save()
-            res.status(200).json({status:true,id:result._id})
+            res.status(200).json({status:true,message:"Smart Contract saved successfully"})
 
         }catch(err){
             error(err,req);

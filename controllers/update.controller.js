@@ -1,6 +1,9 @@
 const DataRefine=require('../services/DataRefine.service');
 const S3=require('../utils/s3');
+const {updatedata}=require('../utils/utils')
 const {NFT}=require('../models/nft.model');
+const {Pages}=require('../models/pages.model')
+const {SmartContract}=require('../models/smartcontroller.model')
 const error=require('../services/errorFormater');
  class Update
 {
@@ -55,6 +58,50 @@ const error=require('../services/errorFormater');
                 error(err,req);
                 res.status(500).send("Server error");
             }
+    }
+
+    async Page(req,res){
+        try{
+            const data=DataRefine.prototype.removeNullData(req.body);
+            
+            Pages.findOne({_id:data.id}).then(async (page)=>{
+                if(data.bg_image.length){
+                    await S3.prototype.deleteImage(page.filename)
+                    let result=await S3.prototype.uploadImage(data.bg_image)
+                    data.filename=result.filename
+                    data.bg_image=result.location
+                }
+                for(let i of Object.entries(data))
+                {
+                    page[i[0]]=i[1];
+                }
+                await page.save()
+            })
+
+            res.status(200).json({status:true,message:"Page updated successfuly"})
+        }
+        catch(err){
+            error(err,req)
+            res.status(200).json({message:"Server Error"})
+    }
+    }
+
+    async SmartContract(req,res){
+        try{
+            const data=DataRefine.prototype.removeNullData(req.body);
+            SmartContract.findOne({_id:data.id}).then(async (contract)=>{
+                for(let i of Object.entries(data))
+                {
+                    contract[i[0]]=i[1];
+                }
+                await contract.save()
+            })
+            res.status(200).json({status:true,message:"Smart Contract Updated Successfully"})
+        }
+        catch(err){
+            error(err,req)
+            res.status(500).json({message:"Server Error"})
+        }
     }
 }
 module.exports=Update;

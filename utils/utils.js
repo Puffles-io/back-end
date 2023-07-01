@@ -48,7 +48,16 @@ function issueJWT(address) {
   
   return signedToken
 }
+function updatedata(newOne,oldOne)
+{
+    for(let i of Object.entries(newOne))
+    {
+        oldOne[i[0]]=i[1];
+    }
+    return oldOne;
+}
 
 module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
+module.exports.updatedata=updatedata

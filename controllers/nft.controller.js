@@ -68,14 +68,4 @@ exports.get_nfts=async (req,res)=>{
         }
     })
 }
-exports.update_nft=async (req,res)=>{
-    return new ProcessingInstruction(async function(resolve,reject){
-        try{
 
-        }
-        catch(err){
-            error(err,req);
-            res.status(500).json({message:"Err"+err})
-        }
-    })
-}

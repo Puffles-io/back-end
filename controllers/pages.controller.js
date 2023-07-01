@@ -1,16 +1,20 @@
 const {Pages}=require("../models/pages.model")
 const error=require('../services/errorFormater');
+const S3=require('../utils/s3');
 exports.pages=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.address||req.body.sale_date||req.body.supply||req.body.limit_per_wallet||req.body.price||req.body.Url_string)){
+            if(!Boolean(req.body.artwork_id || req.body.Url_string || req.body.theme ||req.body.bg_image)){
                 res.status(200).json({status:false,message:"Missing details"})
             }
             else{
                 req.body.ip=req.connection.remoteAddress
+                let result=await S3.prototype.uploadImage(req.body.bg_image)
+                req.body.bg_image=result.location
+                req.body.filename=result.filename
                 let page=new Pages(req.body)
                 await page.save()
-                res.status(200).json({status:true,id:page._id})    
+                res.status(200).json({status:true,message:"Page saved successfully"})    
             }
             }
         catch(err){

@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const fs=require('fs');
 const path=require('path')
+const {updatedata}=require('./utils')
 const s3 = new AWS.S3({
     accessKeyId: process.env.ACCESS_KEY,
     secretAccessKey: process.env.ACCESS_SECRET,
@@ -173,7 +174,7 @@ class S3Methods
                         {
                             if(value.id==i.id) 
                             {
-                               i=this.updatedata(value,i);
+                               i=updatedata(value,i);
                                break;
                             }
                         }
@@ -215,14 +216,7 @@ class S3Methods
         })
     }
     
-    updatedata(newOne,oldOne)
-    {
-        for(let i of Object.entries(newOne))
-        {
-            oldOne[i[0]]=i[1];
-        }
-        return oldOne;
-    }
+    
     async deleteImage(filename){
             return new Promise(async (resolve,reject)=>
             {
