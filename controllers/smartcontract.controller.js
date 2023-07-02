@@ -3,7 +3,7 @@ const error=require('../services/errorFormater');
 exports.smartcontract=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.name || req.body.token_symbol || req.body.total_supply || req.body.price || req.body.max_token_per_wallet || req.body.recipient_address || req.body.artwork_id)){
+            if(!Boolean(req.body.sale_date||req.body.name || req.body.token_symbol || req.body.total_supply || req.body.price || req.body.max_token_per_wallet || req.body.recipient_address || req.body.artwork_id)){
                 res.status(200).json({status:false,message:"Missing Credentials"})
             }
             req.body.ip=req.connection.remoteAddress
@@ -24,7 +24,7 @@ exports.get_contract=async (req,res)=>{
             if(!Boolean(req.body.id)){
                 res.status(200).json({status:false,message:"Missing id"})
             }
-            let contract=await SmartContract.find({_id:req.body.id})
+            let contract=await SmartContract.find({artwork_id:req.body.id})
             if(contract.length){
                 res.status(200).json({status:true,contract:contract[0]})
             }

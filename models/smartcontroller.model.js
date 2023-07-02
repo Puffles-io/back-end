@@ -10,6 +10,7 @@ const smartcontractSchema=new Schema({
     max_token_per_wallet: {type:Number,required:true},
     wallet_address: {type:String,required:true},
     recipient_address: {type:String,required:true},
+    sale_date:{type:String,required:true},
     artwork_id:{type:String,required:true},
     timestamp:{type:Date,default:new Date()},
     ip:{type:String,required:true}

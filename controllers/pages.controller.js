@@ -30,7 +30,7 @@ exports.get_page=async (req,res)=>{
             if(!Boolean(req.body.id)){
                 res.json(200).json({status:false,message:"Missing id value"})
             }
-            let page=await page.find({_id:req.body.id})
+            let page=await page.find({artwork_id:req.body.id})
             if(page.length){
                 res.status(200).json({status:true,page:page[0]})
             }
