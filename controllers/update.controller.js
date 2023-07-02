@@ -63,9 +63,8 @@ const error=require('../services/errorFormater');
     async Page(req,res){
         try{
             const data=DataRefine.prototype.removeNullData(req.body);
-            
             Pages.findOne({_id:data.id}).then(async (page)=>{
-                if(data.bg_image.length){
+                if(data.bg_image){
                     await S3.prototype.deleteImage(page.filename)
                     let result=await S3.prototype.uploadImage(data.bg_image)
                     data.filename=result.filename
@@ -73,6 +72,7 @@ const error=require('../services/errorFormater');
                 }
                 for(let i of Object.entries(data))
                 {
+                    console.log(i)
                     page[i[0]]=i[1];
                 }
                 await page.save()
