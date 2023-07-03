@@ -1,17 +1,42 @@
 const S3=require('../utils/s3');
+const DataRefine=require('../services/DataRefine.service');
 class DeleteNft
 {
     async removeNft(req,res)
     {
         try
         {
-            let jsonArray=await S3.prototype.getJsonArray(req.user.address);
-            jsonArray=JSON.parse(jsonArray.Body.toString())
+            
+            let dataFromS3=await S3.prototype.getJsonArray(req.user.address);
+            let bufferData=dataFromS3.Body.toJSON();
+            const buffer=Buffer.from(bufferData.data);
+            let value=buffer.toLocaleString().replace(/\\/g, '');
+            let first=0,last=0;
+            for(let i of value)
+            {
+                if(i=='{')
+                {
+                    break;
+                }
+                first++;
+            }
+            first--;
+            for(let i=value.length-1;i>=0;i--)
+            {
+                if(value[i]=='}')
+                {
+                   break; 
+                }
+                last++;
+            }
+            let value2=value.substring(first,value.length-last)+"]";
+           const jsonArray=JSON.parse(value2);
             let index=0;
             for(let i of jsonArray)
             {
                 if(i.id==req.body.id)
                 {
+                
                     if(i.placeholder_file.length) //* It is not empty
                     {
                         await S3.prototype.deleteImage(i.placeholder_file);
@@ -26,6 +51,7 @@ class DeleteNft
         }
         catch(err)
         {
+            console.log(err)
             if(err.code=='NoSuchKey')
             {
                 return res.status(404).send('NoSuchKey');
