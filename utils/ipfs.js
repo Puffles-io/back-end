@@ -1,6 +1,9 @@
 const {Web3Storage,getFilesFromPath}=require('web3.storage')
+const path=require('path')
+const fs=require('fs')
+require('dotenv').config()
 class IPFS{
-    storage=new Web3Storage({token:process.env.WEB3_TOKEN})
+    
     async uploadImage(base64string){
         return new Promise(async (resolve,reject)=>{
             try{
@@ -9,7 +12,7 @@ class IPFS{
                 fs.writeFileSync(tempPath, bufferImage);
                 const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
                 const file=await getFilesFromPath(tempPath)
-                const cid=await this.storage.put(file)
+                const cid=await storage.put(file)
                 fs.unlinkSync(tempPath);
                 resolve({filename:"temp.png",location:cid})
             }
@@ -22,7 +25,7 @@ class IPFS{
     async deleteImage(cid){
         return new Promise(async(resolve,reject)=>{
             try{
-
+            const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
             await this.storage.delete(cid);
             resolve()
             }
