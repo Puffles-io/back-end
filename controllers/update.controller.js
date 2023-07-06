@@ -2,6 +2,7 @@ const DataRefine=require('../services/DataRefine.service');
 const S3=require('../utils/s3');
 const {updatedata}=require('../utils/utils')
 const {NFT}=require('../models/nft.model');
+const IPFS=require('../utils/ipfs')
 const {Pages}=require('../models/pages.model')
 const {SmartContract}=require('../models/smartcontroller.model')
 const error=require('../services/errorFormater');
@@ -17,16 +18,39 @@ const error=require('../services/errorFormater');
                 let json=await S3.prototype.getJson(req.user.address,data.id)
                 if(data.file_url)
                 {
-                    Filekey=await S3.prototype.uploadImage(data.file_url);
-                    await S3.prototype.deleteImage(json.filename);
+                    if(json.detailed_reveal){
+                        await IPFS.prototype.deleteImage(json.file_url)
+                            
+                    }
+                    else{
+                        await S3.prototype.deleteImage(json.filename);
+                    }
+                    if(data.detailed_reveal){
+                        Filekey=await IPFS.prototype.uploadImage(data.file_url)
+                    }
+                    else{
+                        Filekey=await S3.prototype.uploadImage(data.file_url);
+                    }
+                    
                     data.filename=Filekey.filename;
                     data.file_url=Filekey.location;
                 }
                 if(data.placeholder_image)
                 {
-                    PlaceHolderKey=await S3.prototype.uploadImage(data.placeholder_image);
+                    
                     if(data.placeholder_image.length){
-                        await S3.prototype.deleteImage(json.placeholder_file);
+                        if(json.detailed_reveal){
+                            await IPFS.prototype.deleteImage(json.placeholder_url)
+                        }
+                        else{
+                            await S3.prototype.deleteImage(json.placeholder_file);
+                        }
+                        if(data.detailed_reveal){
+                           PlaceHolderKey= await IPFS.prototype.uploadImage(data.placeholder_image)
+                        }
+                        else{
+                            PlaceHolderKey=await S3.prototype.uploadImage(data.placeholder_image);
+                        }
                     }
                     delete data.placeholder_image
                     data.placeholder_file=PlaceHolderKey.filename;

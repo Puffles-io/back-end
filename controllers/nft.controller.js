@@ -2,6 +2,7 @@ const {NFT,UserCid}=require("../models/nft.model")
 const {uploaddata,updatedata}=require('../utils/utils')
 const error=require('../services/errorFormater');
 const S3=require('../utils/s3');
+const IPFS=require('../utils/ipfs')
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
@@ -12,12 +13,26 @@ exports.upload_v1=async (req,res)=>{
                 res.status(200).json({status:false,message:"Detailed reveal is not defined"})
             }
             else{
-                let filedata=await S3.prototype.uploadImage(req.body.file_url)
+
+
+                let filedata
+                if(req.body.detailed_reveal){
+                    filedata=await IPFS.prototype.uploadImage(req.body.file_url)
+                }
+                else{
+
+                    filedata=await S3.prototype.uploadImage(req.body.file_url)
+                }
                     let placeholderdata
                     let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
                     let nftData=await nft.save()
                     if(req.body.placeholder_image.length){
-                        placeholderdata=await S3.prototype.uploadImage(req.body.placeholder_image)
+                        if(req.body.detailed_reveal){
+                            placeholderdata=await IPFS.prototype.uploadImage(req.body.file_url)
+                        }
+                        else{
+                            placeholderdata=await S3.prototype.uploadImage(req.body.placeholder_image)
+                        }
                     }
                     else{
                         placeholderdata={filename:"",location:""}

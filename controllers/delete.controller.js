@@ -1,5 +1,5 @@
 const S3=require('../utils/s3');
-const DataRefine=require('../services/DataRefine.service');
+const IPFS=require('../utils/ipfs')
 class DeleteNft
 {
     async removeNft(req,res)
@@ -39,9 +39,16 @@ class DeleteNft
                 
                     if(i.placeholder_file.length) //* It is not empty
                     {
-                        await S3.prototype.deleteImage(i.placeholder_file);
+                        if(i.detailed_reveal){
+                            await IPFS.prototype.deleteImage(i.placeholder_url)
+                            await IPFS.prototype.deleteImage(i.file_url)
+                        }
+                        else{
+                            await S3.prototype.deleteImage(i.placeholder_file);
+                            await S3.prototype.deleteImage(i.filename);
+                        }
                     }
-                    await S3.prototype.deleteImage(i.filename);
+                    
                     delete jsonArray[index];
                 }
                 index++;
