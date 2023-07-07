@@ -15,25 +15,19 @@ exports.upload_v1=async (req,res)=>{
             else{
 
 
-                let filedata
+                let filedata,placeholderdata
                 if(req.body.detailed_reveal){
-                    filedata=await IPFS.prototype.uploadImage(req.body.file_url)
+                    placeholderdata=await IPFS.prototype.uploadImage(req.body.file_url)
+                   
                 }
-                else{
-
                     filedata=await S3.prototype.uploadImage(req.body.file_url)
-                }
-                    let placeholderdata
                     let nft=new NFT({title:req.body.title,address:req.user.address,ip:req.socket.remoteAddress})
                     let nftData=await nft.save()
-                    if(req.body.placeholder_image.length){
+                    
                         if(req.body.detailed_reveal){
-                            placeholderdata=await IPFS.prototype.uploadImage(req.body.file_url)
-                        }
-                        else{
                             placeholderdata=await S3.prototype.uploadImage(req.body.placeholder_image)
                         }
-                    }
+                    
                     else{
                         placeholderdata={filename:"",location:""}
                     }

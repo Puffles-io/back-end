@@ -41,14 +41,10 @@ class DeleteNft
                     {
                         if(i.detailed_reveal){
                             await IPFS.prototype.deleteImage(i.placeholder_url)
-                            await IPFS.prototype.deleteImage(i.file_url)
-                        }
-                        else{
-                            await S3.prototype.deleteImage(i.placeholder_file);
-                            await S3.prototype.deleteImage(i.filename);
+                           
                         }
                     }
-                    
+                    await S3.prototype.deleteImage(i.filename);
                     delete jsonArray[index];
                 }
                 index++;

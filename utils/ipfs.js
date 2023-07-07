@@ -26,7 +26,7 @@ class IPFS{
         return new Promise(async(resolve,reject)=>{
             try{
             const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
-            await this.storage.delete(cid);
+            await storage.delete(cid);
             resolve()
             }
             catch(err)
