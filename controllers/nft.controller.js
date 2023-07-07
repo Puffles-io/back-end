@@ -17,7 +17,7 @@ exports.upload_v1=async (req,res)=>{
 
                 let filedata,placeholderdata
                 if(req.body.detailed_reveal){
-                    placeholderdata=await IPFS.prototype.uploadImage(req.body.file_url)
+                    placeholderdata=await IPFS.prototype.uploadImage(req.body.placeholder_image)
                    
                 }
                     
