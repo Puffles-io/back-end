@@ -1,7 +1,7 @@
 const DataRefine=require('../services/DataRefine.service');
 const S3=require('../utils/s3');
 const {updatedata}=require('../utils/utils')
-const {NFT}=require('../models/nft.model');
+const {NFT,UserCid}=require('../models/nft.model');
 const IPFS=require('../utils/ipfs')
 const {Pages}=require('../models/pages.model')
 const {SmartContract}=require('../models/smartcontroller.model')
@@ -15,7 +15,9 @@ const error=require('../services/errorFormater');
                 const data=DataRefine.prototype.removeNullData(req.body);
                 //* update the data
                 let Filekey,PlaceHolderKey;
-                let json=await S3.prototype.getJson(req.user.address,data.id)
+                let cid=await UserCid.find({address:req.user.address})
+                console.log("cid: ",cid)
+                let json=await IPFS.prototype.getJson(cid[0].cid,data.id)
                 if(data.file_url)
                 {
                     await S3.prototype.deleteImage(json.filename);
@@ -58,6 +60,7 @@ const error=require('../services/errorFormater');
             } 
             catch (err) 
             {
+                console.log("Error: ",err)
                 error(err,req);
                 res.status(500).send("Server error");
             }

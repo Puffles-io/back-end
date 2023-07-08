@@ -11,7 +11,7 @@ const nftSchema=new Schema({
 })
 const usercidSchema=new Schema({
     address:{type:String,required:true},
-    url:{type:String,required:true}
+    cid:{type:String,required:true}
 })
 const NFT=mongoose.model('nft',nftSchema)
 const UserCid=mongoose.model('usercid',usercidSchema)

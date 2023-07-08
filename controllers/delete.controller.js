@@ -1,13 +1,14 @@
 const S3=require('../utils/s3');
-const IPFS=require('../utils/ipfs')
+const IPFS=require('../utils/ipfs');
+const { UserCid } = require('../models/nft.model');
 class DeleteNft
 {
     async removeNft(req,res)
     {
         try
         {
-            
-            let dataFromS3=await S3.prototype.getJsonArray(req.user.address);
+            let cid=await UserCid.find({address:req.user.address})
+            let dataFromS3=await IPFS.prototype.getJsonArray(cid[0].cid);
             let bufferData=dataFromS3.Body.toJSON();
             const buffer=Buffer.from(bufferData.data);
             let value=buffer.toLocaleString().replace(/\\/g, '');
@@ -49,7 +50,13 @@ class DeleteNft
                 }
                 index++;
             }
-            const result=await S3.prototype.updateJsonArray(req.user.address,jsonArray);
+            const result=await IPFS.prototype.updateJsonArray(cid[0].cid,jsonArray);
+            UserCid.findOne({address:req.user.address}).then(async (user)=>{
+                
+                    user.cid=result
+                    await user.save()
+            })
+
             res.send(result.status);
         }
         catch(err)
