@@ -3,9 +3,6 @@ const jsonwebtoken = require('jsonwebtoken');
 const fs = require('fs');
 const moment=require('moment')
 
-const { Readable } = require('stream');
-const os=require('os')
-const {Web3Storage,getFilesFromPath}=require('web3.storage')
 
 
 // Upload a file to S3
@@ -35,7 +32,12 @@ function genPassword(password) {
   // return cid
 
 
-
+function issueTempToken(address,nonce){
+  return jsonwebtoken.sign({address,nonce},process.env.JWT_SECRET,{expiresIn:'60s'})
+}
+function verifyTempToken(tempToken){
+  return jsonwebtoken.verify(tempToken,process.env.JWT_SECRET)
+}
 function issueJWT(address) {
 
   const payload = {
@@ -61,3 +63,5 @@ module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
 module.exports.updatedata=updatedata
+module.exports.issueTempToken=issueTempToken;
+module.exports.verifyTempToken=verifyTempToken
