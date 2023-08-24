@@ -3,14 +3,12 @@ const {uploaddata,updatedata}=require('../utils/utils')
 const error=require('../services/errorFormater');
 const S3=require('../utils/s3');
 const IPFS=require('../utils/ipfs')
+
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.title||req.body.description||req.body.file_url||req.body.placeholder_image)){
+            if(!Boolean(req.body.title||req.body.file_url||req.body.placeholder_image)){
                 res.status(200).json({status:false,message:"Missing data"})
-            }
-            else if(req.body.detailed_reveal===undefined){
-                res.status(200).json({status:false,message:"Detailed reveal is not defined"})
             }
             else{
 
@@ -30,7 +28,7 @@ exports.upload_v1=async (req,res)=>{
                 if((await UserCid.find({address:req.user.address})).length){
                    let usercid=await UserCid.find({address:req.user.address}) 
                    
-                    let cid=await IPFS.prototype.pushtoJson(usercid[0].cid,{title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,filename:filedata.filename,file_url:filedata.location,placeholder_file:placeholderdata,id:nftData._id})
+                    let cid=await IPFS.prototype.pushtoJson(usercid[0].cid,{title:req.body.title,filename:filedata.filename,file_url:filedata.location,placeholder_file:placeholderdata,id:nftData._id})
                     UserCid.findOne({address:req.user.address}).then(async (user)=>{
                         user.cid=cid
                         await user.save()
@@ -38,7 +36,7 @@ exports.upload_v1=async (req,res)=>{
                     res.status(200).json({status:result,id:nftData._id})
                 }
                 else{
-                    let result= await IPFS.prototype.uploadJson({title:req.body.title,description:req.body.description,detailed_reveal:req.body.detailed_reveal,filename:filedata.filename,file_url:filedata.location,placeholder_file:placeholderdata,id:nftData._id})
+                    let result= await IPFS.prototype.uploadJson({title:req.body.title,file_url:filedata.location,placeholder_file:placeholderdata,id:nftData._id})
                     let data=new UserCid({address:req.user.address,cid:result})
                     await data.save()
                     res.status(200).json({status:result.status,id:nftData._id})
