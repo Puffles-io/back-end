@@ -11,52 +11,22 @@ const error=require('../services/errorFormater');
     async NFT(req,res){
             try 
             {
-                //* Refining the data
-                const data=DataRefine.prototype.removeNullData(req.body);
-                //* update the data
-                let Filekey,PlaceHolderKey;
-                let cid=await UserCid.find({address:req.user.address})
-                console.log("cid: ",cid)
-                let json=await IPFS.prototype.getJson(cid[0].cid,data.id)
-                if(data.file_url)
-                {
-                    await S3.prototype.deleteImage(json.filename);
-                    data.filename=Filekey.filename;
-                    data.file_url=Filekey.location;
+                if(!Boolean(req.body.artwork_id)){
+                    res.status(200).json({status:false,message:"missing data"})
+                }
+                else{
+                    if(await NFT.find({artwork_id:req.body.artwork_id}).length==0){
+                        res.staus(200).json({status:false,message:"Artwork doesn't exist"})
+                    }
+                    else{
+                        let data=await NFT.find({artwork_id:req.body.artwork_id})[0]
+                        let filedata=await S3.prototype.uploadImage(req.file)
+                        let nft=new NFT({title:data.title,filename:filedata.filename,url:filedata.location,artwork_id:data.artwork_id,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
+                        await nft.save()
+                        res.status(200).json({status:true,message:"Artwork updated successfully"})
+                    }
                 }
                 
-                if(data.placeholder_image)
-                {
-                        if(json.detailed_reveal){
-                            await IPFS.prototype.deleteImage(json.placeholder_url)
-                        }
-                        PlaceHolderKey= await IPFS.prototype.uploadImage(data.placeholder_image)
-                        
-                    
-                    delete data.placeholder_image
-                    data.placeholder_file=PlaceHolderKey.filename;
-                    data.placeholder_url=PlaceHolderKey.location;
-                }
-                console.log("data: ",data)
-                await S3.prototype.updateJson(req.user.address,data);
-                console.log("updated json file")
-                if(data.title)
-                {
-                    NFT.findOne({_id:data.id}).then(async (userData)=>
-                    {
-                        userData.title=data.title;
-                        userData.timestamp=new Date();
-                        await userData.save();
-                    }).catch((err)=>
-                    {
-                        throw err;
-                    })
-                }
-                res.json(
-                    {
-                        status:true,
-                        message: "collection is updated succesfully"
-                    })
             } 
             catch (err) 
             {

@@ -102,16 +102,17 @@ class S3Methods
     //       }
     //   })
     // }
-    async uploadImage(base64)
+    async uploadImage(fileblob)
     {
         return new Promise(async(resolve,reject)=>
         {
             try
             {
-                const bufferImage = Buffer.from(base64.split(";base64,")[1], "base64");
-                const filename=`${Date.now().toString()}.png`
+                const file_extension=fileblob.originalname.split('.')
+                
+                const filename=Date.now().toString()+file_extension[file_extension.length-1]
                 const tempPath = path.join(__dirname, filename);
-                fs.writeFileSync(tempPath, bufferImage);
+                fs.writeFileSync(tempPath, fileblob.buffer);
                 const params = {
                     Bucket: process.env.BUCKET,
                     Key: filename,
