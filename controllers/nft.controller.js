@@ -8,20 +8,20 @@ const { v4: uuidv4 } = require('uuid');
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.random)){
+            if(!Boolean(req.body.random_value)){
                 res.status(200).json({status:false,message:"Missing data"})
             }
             else{
                 filedata=await S3.prototype.uploadImage(req.file)
                 if(await NFT.find({random_value:req.body.random}).length){
                     let nftdata=await NFT.find({random_value:req.body.random}) 
-                    let nft=new NFT({title:nftdata[0].title,filename:filedata.filename,url:filedata.location,artwork_id:nftdata[0].artwork_id,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
+                    let nft=new NFT({title:nftdata[0].title,placeholder_image:"",filename:filedata.filename,url:filedata.location,artwork_id:nftdata[0].artwork_id,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
                     await nft.save();
                     res.json(200).json({status:true,id:nftdata[0].artwork_id})
                 }
                 else{
                     const uuid=uuidv4()
-                    let nft=new NFT({title:"",filename:filedata.filename,url:filedata.location,artwork_id:uuid,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
+                    let nft=new NFT({title:"",filename:filedata.filename,url:filedata.location,artwork_id:uuid,placeholder_image:"",address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
                     await nft.save();
                     res.status(200).json({status:true,id:uuid})
                 }

@@ -9,8 +9,7 @@ const nftSchema=new Schema({
     random_value:{required:true,type:String},
     placeholder_image:{required:true,type:String},
     title:{type:String,required:true},
-    address:{type:String,
-    required:true},
+    address:{type:String,required:true},
     timestamp:{type:Date,default:new Date()},
     ip:{type:String,required:true},
     
