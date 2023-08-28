@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.random_value)){
+            if(!Boolean(req.body.random)){
                 res.status(200).json({status:false,message:"Missing data"})
             }
             else{
