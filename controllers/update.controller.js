@@ -20,8 +20,8 @@ const error=require('../services/errorFormater');
                     }
                     else{
                         let data=await NFT.find({artwork_id:req.body.artwork_id})[0]
-                        let filedata=await S3.prototype.uploadImage(req.file)
-                        let nft=new NFT({title:data.title,filename:filedata.filename,url:filedata.location,artwork_id:data.artwork_id,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
+                        let cid=await IPFS.prototype.uploadImage(req.file)
+                        let nft=new NFT({title:data.title,cid:cid,placeholder_filename:data.placeholder_filename,placeholder_fileurl:data.placeholder_fileurl,artwork_id:data.artwork_id,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
                         await nft.save()
                         res.status(200).json({status:true,message:"Artwork updated successfully"})
                     }

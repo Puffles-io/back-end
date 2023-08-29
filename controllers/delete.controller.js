@@ -9,7 +9,7 @@ class DeleteNft
         {
            let artworks=await NFT.find({artwork_id:req.body.id})
            artworks.forEach(async artwork=>{
-            await S3.prototype.deleteImage(artwork.filename)
+            await IPFS.prototype.deleteImage(artwork.cid)
             await artwork.remove()
            })
             
@@ -26,7 +26,7 @@ class DeleteNft
     {
         try
         {
-           await IPFS.prototype.deleteImage(req.placeholder_image)
+           await S3.prototype.deleteImage(req.body.placeholder_filename)
             
             res.status(200).json({status:true,message:"placeholder image deleted successfully"});
         }
