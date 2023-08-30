@@ -10,6 +10,7 @@ const nftSchema=new Schema({
     placeholder_fileurl:{required:false,type:String},
     title:{type:String,required:false},
     address:{type:String,required:true},
+    metadata_cid:{type:String,required:false},
     timestamp:{type:Date,default:new Date()},
     ip:{type:String,required:true},
     

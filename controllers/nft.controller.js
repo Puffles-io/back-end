@@ -77,13 +77,31 @@ exports.placeholder_image=async (req,res)=>{
                     let filedata=await S3.prototype.uploadImage(req.file)
                     let artworks=await NFT.find({artwork_id:req.body.artwork_id})
                     artworks.forEach(async artwork=>{
-                        artwork.placeholder_file=filedata.filename
+                        artwork.placeholder_filename=filedata.filename
                         artwork.placeholder_fileurl=filedata.location
                         await artwork.save()
                     })
                     res.status(200).json({status:true,message:"placeholder image saved"})
                 }
             }
+    }catch(err){
+        res.sttaus(500).json({status:false,message:"Err: "+err})
+    }
+}
+exports.metadata=async (req,res)=>{
+    try{
+        if(await NFT.find({artwork_id:req.body.artwork_id}).length==0){
+            res.status(200).json({status:false,message:"Artwork id doesn't exist"})
+        }
+        else{
+            let cid=IPFS.prototype.uploadImage(req.file)
+            let results=await NFT.find({artwork_id:req.body.artwork_id})
+            results.forEach(async artwork=>{
+                artwork.metadata_cid=cid
+                await artwork.save()
+            })
+            res.status(200).json({status:true,message:"metadata saved"})
+        }
     }catch(err){
         res.sttaus(500).json({status:false,message:"Err: "+err})
     }
