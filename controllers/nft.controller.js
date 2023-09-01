@@ -66,7 +66,7 @@ exports.title=async (req,res)=>{
 }
 exports.placeholder_image=async (req,res)=>{
     try{
-            if(!Boolean(req.body.placeholder_image)){
+            if(!Boolean(req.body.artwork_id)){
                 res.status(200).json({status:false,message:"Missing data"})
             }
             else{
