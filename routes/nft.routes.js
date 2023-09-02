@@ -9,4 +9,5 @@ module.exports=(app)=>{
     app.post('/placeholder',passport.authenticate('jwt',{session:false}),upload.single('file'),NFTController.placeholder_image)
     app.post('/metadata',passport.authenticate('jwt',{session:false}),upload.single('file'),NFTController.metadata)
     app.get('/get_nfts',passport.authenticate('jwt',{session:false}),NFTController.get_nfts)
+    app.post('/IPFSupload',passport.authenticate('jwt',{session:false}),NFTController.uploadtoIPFS)
 }

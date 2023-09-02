@@ -8,8 +8,8 @@ class DeleteNft
         try
         {
            let artworks=await NFT.find({artwork_id:req.body.id})
+           await IPFS.prototype.deleteImage(artworks[0].cid)
            artworks.forEach(async artwork=>{
-            await IPFS.prototype.deleteImage(artwork.cid)
             await artwork.remove()
            })
             

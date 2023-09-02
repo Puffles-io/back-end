@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken');
 const fs = require('fs');
+const path=require('path')
 const moment=require('moment')
 
 const { Readable } = require('stream');
@@ -18,6 +19,19 @@ function genPassword(password) {
     let hash=bcrypt.hashSync(password,parseInt(process.env.SALT_ROUNDS))
     return hash
     
+}
+function writeFile(file,id){
+  let idfolder=path.join(__dirname,"files",id)
+  if(!fs.existsSync(idfolder)){
+    fs.mkdirSync(idfolder,{recursive:true})
+  }
+  const file_extension=file.originalname.split('.')
+                
+  const filename=Date.now().toString()+file_extension[file_extension.length-1]
+  
+  const tempPath = path.join(idfolder, filename);
+  fs.writeFileSync(tempPath,file.buffer)
+
 }
 
 
@@ -61,3 +75,4 @@ module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
 module.exports.updatedata=updatedata
+module.exports.writeFile=writeFile

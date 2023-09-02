@@ -1,9 +1,9 @@
 const {NFT,UserCid}=require("../models/nft.model")
-const {uploaddata,updatedata}=require('../utils/utils')
+const {writeFile}=require('../utils/utils')
 const error=require('../services/errorFormater');
 const S3=require('../utils/s3');
 const IPFS=require('../utils/ipfs')
-const { v4: uuidv4 } = require('uuid');
+const fs=require('fs')
 
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
@@ -12,19 +12,8 @@ exports.upload_v1=async (req,res)=>{
                 res.status(200).json({status:false,message:"Missing data"})
             }
             else{
-                cid=await IPFS.prototype.uploadImage(req.file)
-                if(await NFT.find({random_value:req.body.random}).length){
-                    let nftdata=await NFT.find({random_value:req.body.random}) 
-                    let nft=new NFT({title:nftdata[0].title,placeholder_filename:"",placeholder_fileurl:"",cid:cid,artwork_id:nftdata[0].artwork_id,address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
-                    await nft.save();
-                    res.json(200).json({status:true,id:nftdata[0].artwork_id})
-                }
-                else{
-                    const uuid=uuidv4()
-                    let nft=new NFT({title:"",cid:cid,artwork_id:uuid,placeholder_filename:"",placeholder_fileurl:"",address:req.user.address,random_value:req.body.random,ip:req.socket.remoteAddress})
-                    await nft.save();
-                    res.status(200).json({status:true,id:uuid})
-                }
+                writeFile(req.file,req.body.random)
+                res.status(200).json({status:true,id:req.body.random})
                 
                 // let {cid,filename}= await uploadImage(req.body.file_url);
                 // let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
@@ -40,6 +29,38 @@ exports.upload_v1=async (req,res)=>{
             res.status(500).json({message:"Error: "+err.toString()})
         }
     })
+}
+exports.uploadtoIPFS=async (req,res)=>{
+    try{
+        if(!Boolean(req.body.id)){
+            res.status(200).json({status:false,message:"Missing artwork id"})
+        }
+        else{
+            if(fs.existsSync(`${__dirname}/files/${req.body.id}`)){
+                let files=await IPFS.prototype.uploadFiles(req.body.id)
+                let data=await NFT.find({artwork_id:req.body.random})
+                if(data.length){
+                    files.files.forEach(async file=>{
+                        let nft=new NFT({title:data[0].title,placeholder_filename:data[0].placeholder_filename,placeholder_fileurl:data[0].placeholder_fileurl,filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
+                        await nft.save();   
+                        })    
+                }
+                else{
+                    files.files.forEach(async file=>{
+                        let nft=new NFT({title:"",placeholder_filename:"",placeholder_fileurl:"",filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
+                        await nft.save();   
+                        })
+                }
+                res.status(200).json({status:true,message:"Artworks uploaded successfully"})
+                
+            }
+            else{
+                res.status(200).json({status:false,message:"Artwork doesnt exist for this id"})
+            }
+        }
+    }catch(err){
+        res.status(200).json({status:false,message:err.toString()})
+    }
 }
 exports.title=async (req,res)=>{
     try{
