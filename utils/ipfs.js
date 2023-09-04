@@ -3,7 +3,27 @@ const path=require('path')
 const fs=require('fs')
 require('dotenv').config()
 class IPFS{
-    
+    async uploadImage(fileblob){
+        return new Promise(async (resolve,reject)=>{
+            try{
+              
+                const file_extension=fileblob.originalname.split('.')
+
+                const filename=Date.now().toString()+file_extension[file_extension.length-1]
+
+                const tempPath = path.join(__dirname, filename);
+                fs.writeFileSync(tempPath, fileblob.buffer);
+                const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
+                const file=await getFilesFromPath(tempPath)
+                const cid=await storage.put(file,{wrapWithDirectory:false})
+                fs.unlinkSync(tempPath);
+                resolve(cid)
+            }
+            catch(err){
+                reject(err)
+            }
+        })
+    }
     async uploadFiles(id){
         return new Promise(async (resolve,reject)=>{
             try{
