@@ -1,5 +1,4 @@
-const {NFT}=require('../models/nft.model');
-const {Pages}=require('../models/pages.model')
+const DatabaseHelper = require('../models/nft.model');
 const error=require('../services/errorFormater');
 class DataExistence
 {
@@ -8,8 +7,15 @@ class DataExistence
         try 
         {
             const {name}=req.params;
-            const data=await NFT.find({title:name});
-            res.json(data.length>0);
+           const params={
+                TableName:'puffles',
+                KeyConditionExpression:"#PK=:PK and #title=:title and begins_with(#SK,:SK)",
+                ExpressionAttributeNames:{"#PK":"PK","#SK":":SK","#title":":title"},
+                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"ART#",":title":name}
+
+            }
+            const data=await DatabaseHelper.prototype.getItems(params)
+            res.json(data.Items.length>0);
         } 
         catch (err) 
         {
@@ -23,7 +29,14 @@ class DataExistence
         try
         {
             const {urlString}=req.params;
-            const data=await Pages.find({Url_string:urlString});
+            const params={
+                TableName:'puffles',
+                KeyConditionExpression:"#PK=:PK and #url=:url and begins_with(#SK,:SK)",
+                ExpressionAttributeNames:{"#PK":"PK","#SK":":SK","#url":":url"},
+                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"PGE#",":url":urlString}
+
+            }
+            const data=await DatabaseHelper.prototype.getItems(params)
             res.json(data.length>0);
         }
         catch(err)

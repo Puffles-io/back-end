@@ -7,10 +7,20 @@ require('dotenv').config();
 
 
 var app = express();
-const MongooseConnection=require('./config/database');
-const dbConnect=new MongooseConnection();
-dbConnect.connect().then(()=>{console.log('database connected')}).catch((err)=>{console.log(err)});
-require('./config/database');
+const dynamodb=require('./config/database');
+const params = {
+    TableName: 'puffles', // Replace with your table name
+    Limit: 1 // Retrieve only one item
+  };
+  
+  dynamodb.scan(params, (err, data) => {
+    if (err) {
+      console.error('Error:', err);
+    } else {
+      console.log('Successfully connected to DynamoDB.');
+      console.log('Scanned items:', data.Items);
+    }
+  });
 
 require('./config/passport')(passport);
 app.use(cors())

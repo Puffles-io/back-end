@@ -1,9 +1,9 @@
-const {NFT,UserCid}=require("../models/nft.model")
 const {writeFile}=require('../utils/utils')
 const error=require('../services/errorFormater');
 const S3=require('../utils/s3');
 const IPFS=require('../utils/ipfs')
 const fs=require('fs')
+const Database=require('../models/nft.model')
 
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
@@ -38,19 +38,32 @@ exports.uploadtoIPFS=async (req,res)=>{
         else{
             if(fs.existsSync(`${__dirname}/files/${req.body.id}`)){
                 let files=await IPFS.prototype.uploadFiles(req.body.id)
+                const params={
+                    TableName:'puffles',
+                    Item:{
+                        PK:`ADR#${req.user.address}`,
+                        SK:`ART#${req.body.id}`,
+                        filenames:files.files,
+                        cid:files.cid,
+                        timestamp:new Date().toISOString(),
+                        ip:req.connection.remoteAddress
+
+                    }
+                }
+                await Database.prototype.addItem(params)
                 let data=await NFT.find({artwork_id:req.body.random})
-                if(data.length){
-                    files.files.forEach(async file=>{
-                        let nft=new NFT({title:data[0].title,placeholder_filename:data[0].placeholder_filename,placeholder_fileurl:data[0].placeholder_fileurl,filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
-                        await nft.save();   
-                        })    
-                }
-                else{
-                    files.files.forEach(async file=>{
-                        let nft=new NFT({title:"",placeholder_filename:"",placeholder_fileurl:"",filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
-                        await nft.save();   
-                        })
-                }
+                // if(data.length){
+                //     files.files.forEach(async file=>{
+                //         let nft=new NFT({title:data[0].title,placeholder_filename:data[0].placeholder_filename,placeholder_fileurl:data[0].placeholder_fileurl,filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
+                //         await nft.save();   
+                //         })    
+                // }
+                // else{
+                //     files.files.forEach(async file=>{
+                //         let nft=new NFT({title:"",placeholder_filename:"",placeholder_fileurl:"",filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
+                //         await nft.save();   
+                //         })
+                // }
                 res.status(200).json({status:true,message:"Artworks uploaded successfully"})
                 
             }
@@ -68,16 +81,26 @@ exports.title=async (req,res)=>{
         res.status(200).json({status:false,message:"Missing data"})
     }
     else{
-        if(await NFT.find({artwork_id:req.body.artwork_id}).length==0){
+        const params={
+            TableName:'puffles',
+            Key:{
+                PK:`ADR#${req.user.address}`,
+                SK:`ART#${req.body.artwork_id}`
+                }
+        }
+        if(await Database.prototype.getItem(params) ===undefined){
             res.status(200).json({status:false,message:"Artwork ID doesn't exist"})
         }
         else{
-           let artworks= await NFT.find({random_value:req.body.artwork_id})
-           artworks.forEach(async artwork=>{
-            artwork.title=req.body.title
-            await artwork.save()
-           })
-           res.status(200).json({status:true,message:"Artwork saved successfully"})
+            const updatedParams={
+                TableName:'puffles',
+                Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                UpdateExpression:"set #title=:title",
+                ExpressionAttributeNames:{"#title":"title"},
+                ExpressionAttributeValues:{":title":req.body.title}
+            }
+            await Database.prototype.updateItems(updatedParams)
+           res.status(200).json({status:true,message:"Artwork title updated successfully"})
         }
 
     }
@@ -91,36 +114,61 @@ exports.placeholder_image=async (req,res)=>{
                 res.status(200).json({status:false,message:"Missing data"})
             }
             else{
-                if(await NFT.find({artwork_id:req.body.artwork_id}).length==0){
+                const params={
+                    TableName:'puffles',
+                        Key:{
+                        PK:`ADR#${req.user.address}`,
+                        SK:`ART#${req.body.artwork_id}`
+                        }
+                }
+                let results=await Database.prototype.getItem(params)
+                if(results===undefined){
                     res.status(200).json({status:false,message:"Artwork id doesn't exist"})
                 }
                 else{
+                    
+                    if(results.Items.hasOwnProperty(placeholder_image)&& results.Items.placeholder_image!=""){
+                        S3.prototype.deleteImage(results.Items.placeholder_image)
+                    }
                     let filedata=await S3.prototype.uploadImage(req.file)
-                    let artworks=await NFT.find({artwork_id:req.body.artwork_id})
-                    artworks.forEach(async artwork=>{
-                        artwork.placeholder_filename=filedata.filename
-                        artwork.placeholder_fileurl=filedata.location
-                        await artwork.save()
-                    })
+                    const updatedParams={
+                        TableName:'puffles',
+                        Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                        UpdateExpression:"set #placeholder_image=:placeholder_image,#placeholder_fileurl=:placeholder_fileurl",
+                        ExpressionAttributeNames:{"#placeholder_image":"placeholder_image","#placeholder_fileurl":"placeholder_fileurl"},
+                        ExpressionAttributeValues:{":placeholder_image":filedata.filename,":placeholder_fileurl":filedata.location}
+                    }
+                    await Database.prototype.updateItems(updatedParams)
                     res.status(200).json({status:true,message:"placeholder image saved"})
                 }
             }
     }catch(err){
-        res.sttaus(500).json({status:false,message:"Err: "+err})
+        res.staus(500).json({status:false,message:"Err: "+err})
     }
 }
 exports.metadata=async (req,res)=>{
     try{
-        if(await NFT.find({artwork_id:req.body.artwork_id}).length==0){
+        const params={
+            TableName:'puffles',
+            Key:{
+                PK:`ADR#${req.user.address}`,
+                SK:`ART#${req.body.artwork_id}`
+                }
+        }
+        let results=await Database.prototype.getItem(params)
+        if(results===undefined){
             res.status(200).json({status:false,message:"Artwork id doesn't exist"})
         }
         else{
             let cid=IPFS.prototype.uploadImage(req.file)
-            let results=await NFT.find({artwork_id:req.body.artwork_id})
-            results.forEach(async artwork=>{
-                artwork.metadata_cid=cid
-                await artwork.save()
-            })
+            const updatedParams={
+                TableName:'puffles',
+                Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
+                UpdateExpression:"set #metadata=:metadata",
+                ExpressionAttributeNames:{"#metadata":"metadata"},
+                ExpressionAttributeValues:{":metadata":cid}
+            }
+            await Database.prototype.updateItems(updatedParams)
             res.status(200).json({status:true,message:"metadata saved"})
         }
     }catch(err){
@@ -130,25 +178,21 @@ exports.metadata=async (req,res)=>{
 exports.get_nfts=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            let metadata=await NFT.find({address:req.user.address})
+            const params={
+                TableName:'puffles',
+                KeyConditionExpression:"#PK=:PK and begins_with(#SK,:SK)",
+                ExpressionAttributeNames:{"#PK":"PK","#SK":"SK"},
+                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"ART#"}
+
+            }
+            let metadata=await Database.prototype.getItems(params)
             console.log("metadata: ",metadata)
-            if(metadata.length==0){
+            if(metadata.Items.length==0){
                 res.status(200).json({status:true,artwork:[]})
             }
             else{
-                const sortedObject = {};
-
-                metadata.forEach(item => {
-                    const artworkId = item.artwork_id;
-                    delete item.artwork_id;
-                    
-                    if (!sortedObject[artworkId]) {
-                        sortedObject[artworkId] = [];
-                    }
-                    
-                    sortedObject[artworkId].push(item);
-                });
-                res.status(200).json({status:true,artwork:sortedObject})
+                
+                res.status(200).json({status:true,artwork:metadata.Items})
             }
         }
         catch(err){

@@ -1,4 +1,4 @@
-const {SmartContract}=require("../models/smartcontroller.model")
+const DatabaseHelper = require("../models/nft.model");
 const error=require('../services/errorFormater');
 exports.smartcontract=async (req,res)=>{
     return new Promise(async function(resolve,reject){
@@ -7,9 +7,24 @@ exports.smartcontract=async (req,res)=>{
                 res.status(200).json({status:false,message:"Missing Credentials"})
             }
             req.body.ip=req.connection.remoteAddress
-            req.body.wallet_address=req.user.address    
-            let contract=new SmartContract(req.body)
-            let result=await contract.save()
+            req.body.wallet_address=req.user.address  
+            const params={
+                TableName:'puffles',
+                Item:{
+                    PK:`ADR#${req.user.address}`,
+                    SK:`SMC#${req.body.artwork_id}`,
+                    ip:req.connection.remoteAddress,
+                    wallet_address:req.user.address,
+                    sale_date:req.body.sale_data,
+                    token_symbol:req.body.token_symbol,
+                    total_supply:req.body.total_supply,
+                    price:req.body.price,
+                    max_token_per_wallet:req.body.max_token_per_wallet,
+                    recipient_address:req.body.recipient_address,
+                    timestamp:new Date()
+                    }
+            }  
+            await DatabaseHelper.prototype.addItem(params)
             res.status(200).json({status:true,message:"Smart Contract saved successfully"})
 
         }catch(err){
@@ -24,12 +39,19 @@ exports.get_contract=async (req,res)=>{
             if(!Boolean(req.body.id)){
                 res.status(200).json({status:false,message:"Missing id"})
             }
-            let contract=await SmartContract.find({artwork_id:req.body.id})
-            if(contract.length){
-                res.status(200).json({status:true,contract:contract[0]})
+            const params={
+                TableName:'puffles',
+                Key:{
+                    PK:`ADR#${req.user.address}`,
+                    SK:`SMC#${req.body.id}`
+                    }
+            }
+            let contract=await DatabaseHelper.prototype.getItem(params)
+            if(contract===undefined){
+                res.status(200).json({status:true,contract:null})
             }
             else{
-                res.status(200).json({status:false,contract:null})
+                res.status(200).json({status:false,contract:contract.Items})
             }
             
         }

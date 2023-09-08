@@ -1,16 +1,12 @@
-const mongoose = require("mongoose");
-class MongooseConnection
-{
-    async connect()
-    {
-        return new Promise(async(resolve,reject)=>{
-            try {
-                await mongoose.connect(String(process.env.MONGODB_URL));
-                resolve(true);
-            } catch (error) {
-                reject(error);
-            }
-        })
-    }
-}
-module.exports=MongooseConnection;
+const AWS = require('aws-sdk');
+require('dotenv').config()
+// Configure AWS SDK
+AWS.config.update({
+  accessKeyId: process.env.ACCESS_KEY,
+  secretAccessKey: process.env.ACCESS_SECRET,
+  region: process.env.REGION
+});
+
+// Create a DynamoDB Document Client instance
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+module.exports=dynamoDB;
