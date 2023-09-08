@@ -1,5 +1,4 @@
 const DatabaseHelper = require("../models/nft.model");
-const {Pages}=require("../models/pages.model")
 const error=require('../services/errorFormater');
 const S3=require('../utils/s3');
 exports.pages=async (req,res)=>{
