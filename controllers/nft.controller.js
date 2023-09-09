@@ -4,6 +4,7 @@ const S3=require('../utils/s3');
 const IPFS=require('../utils/ipfs')
 const fs=require('fs')
 const Database=require('../models/nft.model')
+const path=require('path')
 
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
@@ -32,11 +33,16 @@ exports.upload_v1=async (req,res)=>{
 }
 exports.uploadtoIPFS=async (req,res)=>{
     try{
+        const currentDirectory = __dirname;
+
+        // Get the parent directory (directory above the current directory)
+        const parentDirectory = path.join(__dirname, '..',"utils","files",req.body.id);
+        console.log(parentDirectory)
         if(!Boolean(req.body.id)){
             res.status(200).json({status:false,message:"Missing artwork id"})
         }
         else{
-            if(fs.existsSync(`${__dirname}/files/${req.body.id}`)){
+            if(fs.existsSync(parentDirectory)){
                 let files=await IPFS.prototype.uploadFiles(req.body.id)
                 const params={
                     TableName:'puffles',
@@ -51,19 +57,6 @@ exports.uploadtoIPFS=async (req,res)=>{
                     }
                 }
                 await Database.prototype.addItem(params)
-                let data=await NFT.find({artwork_id:req.body.random})
-                // if(data.length){
-                //     files.files.forEach(async file=>{
-                //         let nft=new NFT({title:data[0].title,placeholder_filename:data[0].placeholder_filename,placeholder_fileurl:data[0].placeholder_fileurl,filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
-                //         await nft.save();   
-                //         })    
-                // }
-                // else{
-                //     files.files.forEach(async file=>{
-                //         let nft=new NFT({title:"",placeholder_filename:"",placeholder_fileurl:"",filename:file,cid:files.cid,artwork_id:req.body.random,address:req.user.address,ip:req.socket.remoteAddress})
-                //         await nft.save();   
-                //         })
-                // }
                 res.status(200).json({status:true,message:"Artworks uploaded successfully"})
                 
             }
