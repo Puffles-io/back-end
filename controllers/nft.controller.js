@@ -33,15 +33,12 @@ exports.upload_v1=async (req,res)=>{
 }
 exports.uploadtoIPFS=async (req,res)=>{
     try{
-        const currentDirectory = __dirname;
-
-        // Get the parent directory (directory above the current directory)
-        const parentDirectory = path.join(__dirname, '..',"utils","files",req.body.id);
-        console.log(parentDirectory)
+        console.log("req body",req.body)
         if(!Boolean(req.body.id)){
             res.status(200).json({status:false,message:"Missing artwork id"})
         }
         else{
+            const parentDirectory = path.join(__dirname, '..',"utils","files",req.body.id);
             if(fs.existsSync(parentDirectory)){
                 let files=await IPFS.prototype.uploadFiles(req.body.id)
                 const params={

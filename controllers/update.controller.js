@@ -47,6 +47,59 @@ const DatabaseHelper = require('../models/nft.model');
                 res.status(500).send("Server error");
             }
     }
+    async Title_Saledate(req,res){
+        try 
+            {
+                const params={
+                    TableName:'puffles',
+                    Item:{
+                        PK:`ADR#${req.user.address}`,
+                        SK:`ART#${req.body.artwork_id}`
+                        }
+                }
+                
+                if(!Boolean(req.body.artwork_id)){
+                    res.status(200).json({status:false,message:"missing data"})
+                }
+                else{
+                    let results=await DatabaseHelper.prototype.getItem(params)
+                    if(results===undefined){
+                        res.status(200).json({status:false,message:"Artwork doesn't exist"})
+                    }
+                    else{
+                        if(req.body.hasOwnProperty(title)){
+                            const updatedParams={
+                                TableName:'puffles',
+                                Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                                UpdateExpression:"set #title=:title",
+                                ExpressionAttributeNames:{"#title":"title"},
+                                ExpressionAttributeValues:{":title":req.body.title}
+                            }
+                            await DatabaseHelper.prototype.updateItems(updatedParams)
+                            res.status(200).json({status:true,message:"Artwork Title updated successfully"})
+                        }
+                        else{
+                            const updatedParams={
+                                TableName:'puffles',
+                                Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                                UpdateExpression:"set #sale=:sale",
+                                ExpressionAttributeNames:{"#sale":"sale_date"},
+                                ExpressionAttributeValues:{":sale":req.body.sale_date}
+                            }
+                            await DatabaseHelper.prototype.updateItems(updatedParams)
+                            res.status(200).json({status:true,message:"Artwork Sale Date updated successfully"})    
+                        }
+                        }
+                }
+                
+            } 
+            catch (err) 
+            {
+                console.log("Error: ",err)
+                error(err,req);
+                res.status(500).send("Server error");
+            }
+    }
 
     async Page(req,res){
         try{
