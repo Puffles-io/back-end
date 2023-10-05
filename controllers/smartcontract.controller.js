@@ -33,6 +33,32 @@ exports.smartcontract=async (req,res)=>{
         }
     })
 }
+exports.get_address=async (req,res)=>{
+    return new Promise(async function(resolve,reject){
+        try{
+            if(!Boolean(req.body.title)){
+                res.status(200).json({status:false,message:"Missing title"})
+            }
+            const params={
+                TableName:'puffles',
+                Key:{
+                    PK:`ADR#${req.user.address}`,
+                    title:req.body.title
+                }
+            }
+            let address=DatabaseHelper.prototype.getItem(params)
+            if(address===undefined){
+                res.status(200).json({status:false,message:"Artwork with given id does not exist"})
+            }
+            else{
+                res.status(200).json({status:true,message:address.Item.address})
+            }
+        }
+        catch(err){
+            res.status(500).json({status:false,message:"Server Error"})
+        }
+    })
+}
 exports.get_contract=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{

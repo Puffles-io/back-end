@@ -47,7 +47,7 @@ const DatabaseHelper = require('../models/nft.model');
                 res.status(500).send("Server error");
             }
     }
-    async Title_Saledate(req,res){
+    async Address_Saledate(req,res){
         try 
             {
                 const params={
@@ -67,13 +67,13 @@ const DatabaseHelper = require('../models/nft.model');
                         res.status(200).json({status:false,message:"Artwork doesn't exist"})
                     }
                     else{
-                        if(req.body.hasOwnProperty(title)){
+                        if(req.body.hasOwnProperty(address)){
                             const updatedParams={
                                 TableName:'puffles',
                                 Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
-                                UpdateExpression:"set #title=:title",
-                                ExpressionAttributeNames:{"#title":"title"},
-                                ExpressionAttributeValues:{":title":req.body.title}
+                                UpdateExpression:"set #address=:address",
+                                ExpressionAttributeNames:{"#address":"address"},
+                                ExpressionAttributeValues:{":address":req.body.address}
                             }
                             await DatabaseHelper.prototype.updateItems(updatedParams)
                             res.status(200).json({status:true,message:"Artwork Title updated successfully"})
