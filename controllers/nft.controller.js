@@ -84,7 +84,7 @@ exports.title=async (req,res)=>{
         else{
             const updatedParams={
                 TableName:'puffles',
-                Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
                 UpdateExpression:"set #title=:title",
                 ExpressionAttributeNames:{"#title":"title"},
                 ExpressionAttributeValues:{":title":req.body.title}
@@ -123,7 +123,7 @@ exports.placeholder_image=async (req,res)=>{
                     let filedata=await S3.prototype.uploadImage(req.file)
                     const updatedParams={
                         TableName:'puffles',
-                        Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                        Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
                         UpdateExpression:"set #placeholder_image=:placeholder_image,#placeholder_fileurl=:placeholder_fileurl",
                         ExpressionAttributeNames:{"#placeholder_image":"placeholder_image","#placeholder_fileurl":"placeholder_fileurl"},
                         ExpressionAttributeValues:{":placeholder_image":filedata.filename,":placeholder_fileurl":filedata.location}
@@ -159,7 +159,7 @@ exports.metadata=async (req,res)=>{
                 ExpressionAttributeValues:{":metadata":cid}
             }
             await Database.prototype.updateItems(updatedParams)
-            res.status(200).json({status:true,message:"metadata saved"})
+            res.status(200).json({status:true,message:cid})
         }
     }catch(err){
         res.sttaus(500).json({status:false,message:"Err: "+err})

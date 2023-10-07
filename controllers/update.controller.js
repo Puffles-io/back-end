@@ -29,7 +29,7 @@ const DatabaseHelper = require('../models/nft.model');
                         let files=await IPFS.prototype.uploadFiles(req.body.artwork_id)
                         const updatedParams={
                             TableName:'puffles',
-                            Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                            Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
                             UpdateExpression:"set #cid=:cid,#filenames=:filenames",
                             ExpressionAttributeNames:{"#cid":"cid","#filenames":"filenames"},
                             ExpressionAttributeValues:{":cid":files.cid,":filenames":files.files}
@@ -70,7 +70,7 @@ const DatabaseHelper = require('../models/nft.model');
                         if(req.body.hasOwnProperty(address)){
                             const updatedParams={
                                 TableName:'puffles',
-                                Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                                Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
                                 UpdateExpression:"set #address=:address",
                                 ExpressionAttributeNames:{"#address":"address"},
                                 ExpressionAttributeValues:{":address":req.body.address}
@@ -81,7 +81,7 @@ const DatabaseHelper = require('../models/nft.model');
                         else{
                             const updatedParams={
                                 TableName:'puffles',
-                                Key:{PK:`ADR${req.user.address}`,SK:`ART${req.body.artwork_id}`},
+                                Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
                                 UpdateExpression:"set #sale=:sale",
                                 ExpressionAttributeNames:{"#sale":"sale_date"},
                                 ExpressionAttributeValues:{":sale":req.body.sale_date}
