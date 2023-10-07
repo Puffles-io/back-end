@@ -11,7 +11,7 @@ const DatabaseHelper = require('../models/nft.model');
             {
                 const params={
                     TableName:'puffles',
-                    Item:{
+                    Key:{
                         PK:`ADR#${req.user.address}`,
                         SK:`ART#${req.body.artwork_id}`
                         }
@@ -52,12 +52,11 @@ const DatabaseHelper = require('../models/nft.model');
             {
                 const params={
                     TableName:'puffles',
-                    Item:{
+                    Key:{
                         PK:`ADR#${req.user.address}`,
                         SK:`ART#${req.body.artwork_id}`
                         }
                 }
-                
                 if(!Boolean(req.body.artwork_id)){
                     res.status(200).json({status:false,message:"missing data"})
                 }
@@ -67,7 +66,8 @@ const DatabaseHelper = require('../models/nft.model');
                         res.status(200).json({status:false,message:"Artwork doesn't exist"})
                     }
                     else{
-                        if(req.body.hasOwnProperty(address)){
+                        if(req.body.hasOwnProperty("address")){
+                            console.log(`ADR#${req.user.address}`,`ART#${req.body.artwork_id}`)
                             const updatedParams={
                                 TableName:'puffles',
                                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},

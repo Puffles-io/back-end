@@ -150,7 +150,7 @@ exports.metadata=async (req,res)=>{
             res.status(200).json({status:false,message:"Artwork id doesn't exist"})
         }
         else{
-            let cid=IPFS.prototype.uploadImage(req.file)
+            let cid=await IPFS.prototype.uploadImage(req.file)
             const updatedParams={
                 TableName:'puffles',
                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
