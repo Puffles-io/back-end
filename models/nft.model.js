@@ -37,6 +37,18 @@ class DatabaseHelper{
             }
         })
     }
+    async matchItem(data){
+        return new Promise(async (resolve,reject)=>{
+            try{
+                docclient.scan(data,function(err,data){
+                    if(err) reject (err)
+                    else resolve(data)
+                })
+            }catch(err){
+                reject(err)
+            }
+        })
+    }
     async getItems(data){
         return new Promise(async (resolve,reject)=>{
             try{

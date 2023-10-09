@@ -39,22 +39,25 @@ exports.get_address=async (req,res)=>{
             if(!Boolean(req.body.title)){
                 res.status(200).json({status:false,message:"Missing title"})
             }
-            const params={
-                TableName:'puffles',
-                Key:{
-                    PK:`ADR#${req.user.address}`,
-                    title:req.body.title
+            const params = {
+                TableName: 'puffles', // Replace with your table name
+                FilterExpression: 'PK = :pk AND title = :title',
+                ExpressionAttributeValues: {
+                    ':pk': `ADR#${req.user.address}`,
+                    ':title': req.body.title
                 }
-            }
-            let address=DatabaseHelper.prototype.getItem(params)
+            };
+            let address=await DatabaseHelper.prototype.matchItem(params)
             if(address===undefined){
                 res.status(200).json({status:false,message:"Artwork with given id does not exist"})
             }
             else{
-                res.status(200).json({status:true,message:address.Item.address})
+                console.log(address)
+                res.status(200).json({status:true,message:address.Items[0].address})
             }
         }
         catch(err){
+            console.log(err)
             res.status(500).json({status:false,message:"Server Error"})
         }
     })
