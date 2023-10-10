@@ -41,9 +41,8 @@ exports.get_address=async (req,res)=>{
             }
             const params = {
                 TableName: 'puffles', // Replace with your table name
-                FilterExpression: 'PK = :pk AND title = :title',
+                FilterExpression: 'title = :title',
                 ExpressionAttributeValues: {
-                    ':pk': `ADR#${req.user.address}`,
                     ':title': req.body.title
                 }
             };
@@ -52,7 +51,6 @@ exports.get_address=async (req,res)=>{
                 res.status(200).json({status:false,message:"Artwork with given id does not exist"})
             }
             else{
-                console.log(address)
                 res.status(200).json({status:true,message:address.Items[0].address})
             }
         }
