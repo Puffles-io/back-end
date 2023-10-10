@@ -191,4 +191,30 @@ exports.get_nfts=async (req,res)=>{
         }
     })
 }
-
+exports.whitelistByTitle=async (req,res)=>{
+    return new Promise(async function(resolve,reject){
+        try{
+            if(!Boolean(req.body.title)){
+                res.status(200).json({status:false,message:"Missing title"})
+            }
+            const params = {
+                TableName: 'puffles', // Replace with your table name
+                FilterExpression: 'title = :title',
+                ExpressionAttributeValues: {
+                    ':title': req.body.title
+                }
+            };
+            let address=await DatabaseHelper.prototype.matchItem(params)
+            if(address===undefined){
+                res.status(200).json({status:false,message:"Artwork with given id does not exist"})
+            }
+            else{
+                res.status(200).json({status:true,message:address.Items[0].whitelist})
+            }
+        }
+        catch(err){
+            console.log(err)
+            res.status(500).json({status:false,message:"Server Error"})
+        }
+    })
+}

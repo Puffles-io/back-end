@@ -9,4 +9,5 @@ router.post('/nft',passport.authenticate('jwt',{session:false}),upload.single('f
 router.post('/page',passport.authenticate('jwt',{session:false}),Update.prototype.Page);
 router.post('/smartcontract',passport.authenticate('jwt',{session:false}),Update.prototype.SmartContract);
 router.post('/address_saledate',passport.authenticate('jwt',{session:false}),Update.prototype.Address_Saledate);
+router.post('/whitelist',passport.authenticate('jwt',{session:false}),Update.prototype.Whitelist)
 module.exports=router;

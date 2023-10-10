@@ -226,5 +226,42 @@ const DatabaseHelper = require('../models/nft.model');
             res.status(500).json({message:"Server Error"})
         }
     }
+    async Whitelist(req,res){
+        try{
+            if(!Boolean(req.body.artwork_id)){
+                res.status(200).json({status:false,message:"Missing data"})
+            }
+            else{
+                const params={
+                    TableName:'puffles',
+                    Key:{
+                        PK:`ADR#${req.user.address}`,
+                        SK:`ART#${req.body.artwork_id}`
+                        }
+                }
+                let results=await DatabaseHelper.prototype.getItem(params)
+                if(results===undefined){
+                    res.status(200).json({status:false,message:"Artwork doesn't exist"})
+                }
+                else{
+                    const updatedParams={
+                        TableName:'puffles',
+                        Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
+                        UpdateExpression:"set #whitelist=:whitelist",
+                        ExpressionAttributeNames:{"#whitelist":"whitelist"},
+                        ExpressionAttributeValues:{":whitelist":req.body.whitelist}
+                    }
+                    await DatabaseHelper.prototype.updateItems(updatedParams)
+                   
+                    res.status(200).json({status:true,message:"Whitelist updated successfuly"})
+                }
+
+                }
+            }catch(err){
+                console.log(err)
+            error(err,req)
+            res.status(500).json({message:"Server Error"})
+        }
+    }
 }
 module.exports=Update;
