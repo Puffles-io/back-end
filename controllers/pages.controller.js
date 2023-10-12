@@ -43,6 +43,7 @@ exports.get_page=async (req,res)=>{
             if(!Boolean(req.body.id)){
                 res.json(200).json({status:false,message:"Missing id value"})
             }
+            else{
             const params={
                 TableName:'puffles',
                 Key:{
@@ -57,6 +58,7 @@ exports.get_page=async (req,res)=>{
             else{
                 res.status(200).json({status:false,page:null})
             }
+        }
         }
         catch(err){
             console.log(err)

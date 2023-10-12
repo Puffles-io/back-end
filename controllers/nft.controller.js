@@ -197,6 +197,7 @@ exports.whitelistByTitle=async (req,res)=>{
             if(!Boolean(req.body.title)){
                 res.status(200).json({status:false,message:"Missing title"})
             }
+            else{
             const params = {
                 TableName: 'puffles', // Replace with your table name
                 FilterExpression: 'title = :title',
@@ -211,6 +212,7 @@ exports.whitelistByTitle=async (req,res)=>{
             else{
                 res.status(200).json({status:true,message:address.Items[0].whitelist})
             }
+        }
         }
         catch(err){
             console.log(err)

@@ -6,6 +6,7 @@ exports.smartcontract=async (req,res)=>{
             if(!Boolean(req.body.sale_date||req.body.name || req.body.token_symbol || req.body.total_supply || req.body.price || req.body.max_token_per_wallet || req.body.recipient_address || req.body.artwork_id)){
                 res.status(200).json({status:false,message:"Missing Credentials"})
             }
+            else{
             req.body.ip=req.connection.remoteAddress
             req.body.wallet_address=req.user.address  
             const params={
@@ -26,7 +27,7 @@ exports.smartcontract=async (req,res)=>{
             }  
             await DatabaseHelper.prototype.addItem(params)
             res.status(200).json({status:true,message:"Smart Contract saved successfully"})
-
+        }
         }catch(err){
             error(err,req);
             res.status(500).json({message:"Error: "+err.toString()})
@@ -39,6 +40,7 @@ exports.get_address=async (req,res)=>{
             if(!Boolean(req.body.title)){
                 res.status(200).json({status:false,message:"Missing title"})
             }
+            else{
             const params = {
                 TableName: 'puffles', // Replace with your table name
                 FilterExpression: 'title = :title',
@@ -54,6 +56,7 @@ exports.get_address=async (req,res)=>{
                 res.status(200).json({status:true,address:address.Items[0].address,active_phase:address.Items[0].active_phase})
             }
         }
+        }
         catch(err){
             console.log(err)
             res.status(500).json({status:false,message:"Server Error"})
@@ -66,6 +69,7 @@ exports.get_contract=async (req,res)=>{
             if(!Boolean(req.body.id)){
                 res.status(200).json({status:false,message:"Missing id"})
             }
+            else{
             const params={
                 TableName:'puffles',
                 Key:{
@@ -80,6 +84,7 @@ exports.get_contract=async (req,res)=>{
             else{
                 res.status(200).json({status:false,contract:contract.Items})
             }
+        }
             
         }
         catch(err){
