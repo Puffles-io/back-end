@@ -205,7 +205,7 @@ exports.whitelistByTitle=async (req,res)=>{
                     ':title': req.body.title
                 }
             };
-            let address=await DatabaseHelper.prototype.matchItem(params)
+            let address=await Database.prototype.matchItem(params)
             if(address===undefined){
                 res.status(200).json({status:false,message:"Artwork with given id does not exist"})
             }
