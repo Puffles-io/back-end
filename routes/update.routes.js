@@ -11,4 +11,5 @@ router.post('/smartcontract',passport.authenticate('jwt',{session:false}),Update
 router.post('/address_saledate',passport.authenticate('jwt',{session:false}),Update.prototype.Address_Saledate);
 router.post('/whitelist',passport.authenticate('jwt',{session:false}),Update.prototype.Whitelist)
 router.post('/active_phase',passport.authenticate('jwt',{session:false}),Update.prototype.activePhase)
+router.post('/links',passport.authenticate('jwt',{session:false}),Update.prototype.List)
 module.exports=router;

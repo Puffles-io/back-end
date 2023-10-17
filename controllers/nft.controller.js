@@ -168,25 +168,26 @@ exports.metadata=async (req,res)=>{
 exports.get_nfts=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            const params={
-                TableName:'puffles',
-                KeyConditionExpression:"#PK=:PK and begins_with(#SK,:SK)",
-                ExpressionAttributeNames:{"#PK":"PK","#SK":"SK"},
-                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"ART#"}
-
-            }
-            let metadata=await Database.prototype.getItems(params)
-            console.log("metadata: ",metadata)
-            if(metadata.Items.length==0){
+            const params = {
+                TableName: 'puffles',
+                KeyConditionExpression: 'PK = :pk',
+                ExpressionAttributeValues: {
+                    ':pk': `ADR#${req.user.address}`
+                }
+            };
+            let nfts=await Database.prototype.getItems(params)
+            console.log("metadata: ",nfts)
+            if(nfts===undefined){
                 res.status(200).json({status:true,artwork:[]})
             }
             else{
                 
-                res.status(200).json({status:true,artwork:metadata.Items})
+                res.status(200).json({status:true,artwork:nfts.Items})
             }
         }
         catch(err){
             error(err,req);
+            console.log("Err: ",err)
             res.status(500).json({message:"Err: "+err})
         }
     })
