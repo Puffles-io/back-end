@@ -79,7 +79,19 @@ exports.title=async (req,res)=>{
                 }
         }
         if(await Database.prototype.getItem(params) ===undefined){
-            res.status(200).json({status:false,message:"Artwork ID doesn't exist"})
+            const params={
+                TableName:'puffles',
+                Item:{
+                    PK:`ADR#${req.user.address}`,
+                    SK:`ART#${req.body.id}`,
+                    title:req.body.title,
+                    timestamp:new Date().toISOString(),
+                    ip:req.connection.remoteAddress
+
+                }
+            }
+            await Database.prototype.addItem(params)
+            res.status(200).json({status:true,message:"Artworks uploaded successfully"})
         }
         else{
             const updatedParams={
@@ -181,7 +193,7 @@ exports.get_nfts=async (req,res)=>{
                 res.status(200).json({status:true,artwork:[]})
             }
             else{
-                
+                nfts.Items.sort((a,b)=>new Date(a.timestamp) - new Date(b.timestamp))
                 res.status(200).json({status:true,artwork:nfts.Items})
             }
         }
