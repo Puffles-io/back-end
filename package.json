@@ -24,6 +24,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "uuid": "^9.0.0",
+    "uuidv4": "^6.2.13",
     "web3.storage": "^4.5.4",
     "winston": "^3.9.0"
   }

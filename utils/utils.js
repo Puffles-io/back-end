@@ -31,7 +31,7 @@ function writeFile(file,id){
   
   const tempPath = path.join(idfolder, filename);
   fs.writeFileSync(tempPath,file.buffer)
-
+  return id 
 }
 
 

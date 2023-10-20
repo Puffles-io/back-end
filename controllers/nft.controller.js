@@ -4,25 +4,21 @@ const S3=require('../utils/s3');
 const IPFS=require('../utils/ipfs')
 const fs=require('fs')
 const Database=require('../models/nft.model')
+const { uuid } = require('uuidv4');
 const path=require('path')
 
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-            if(!Boolean(req.body.random)){
-                res.status(200).json({status:false,message:"Missing data"})
-            }
-            else{
-                writeFile(req.file,req.body.random)
-                res.status(200).json({status:true,id:req.body.random})
+                let id=writeFile(req.file,uuid())
+                res.status(200).json({status:true,id:id})
                 
                 // let {cid,filename}= await uploadImage(req.body.file_url);
                 // let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
                 // let metadata_url=await uploadJSON(metadata)
                 // let nft=new NFT({cid:metadata_url,address:req.user.address,ip:req.connection.remoteAddress,title:req.body.title})
                 // await nft.save()
-                // res.status(200).json({status:true,message:"NFT saved successfully"})
-            }
+                // res.status(200).json({status:true,message:"NFT saved successfully"}) 
         }
         catch(err){
             console.log("error: ",err)
@@ -68,7 +64,19 @@ exports.uploadtoIPFS=async (req,res)=>{
 exports.title=async (req,res)=>{
     try{
     if(!Boolean(req.body.artwork_id)){
-        res.status(200).json({status:false,message:"Missing data"})
+        const params={
+            TableName:'puffles',
+            Item:{
+                PK:`ADR#${req.user.address}`,
+                SK:`ART#${uuid()}`,
+                title:req.body.title,
+                timestamp:new Date().toISOString(),
+                ip:req.connection.remoteAddress
+
+            }
+        }
+        await Database.prototype.addItem(params)
+        res.status(200).json({status:false,message:"New Artwork created"})
     }
     else{
         const params={
@@ -79,19 +87,7 @@ exports.title=async (req,res)=>{
                 }
         }
         if(await Database.prototype.getItem(params) ===undefined){
-            const params={
-                TableName:'puffles',
-                Item:{
-                    PK:`ADR#${req.user.address}`,
-                    SK:`ART#${req.body.id}`,
-                    title:req.body.title,
-                    timestamp:new Date().toISOString(),
-                    ip:req.connection.remoteAddress
-
-                }
-            }
-            await Database.prototype.addItem(params)
-            res.status(200).json({status:true,message:"Artworks uploaded successfully"})
+            res.status(200).json({status:true,message:"Artwork with given id doesnt exist"})
         }
         else{
             const updatedParams={
