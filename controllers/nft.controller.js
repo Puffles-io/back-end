@@ -64,11 +64,12 @@ exports.uploadtoIPFS=async (req,res)=>{
 exports.title=async (req,res)=>{
     try{
     if(!Boolean(req.body.artwork_id)){
+        const id=uuid();
         const params={
             TableName:'puffles',
             Item:{
                 PK:`ADR#${req.user.address}`,
-                SK:`ART#${uuid()}`,
+                SK:`ART#${id}`,
                 title:req.body.title,
                 timestamp:new Date().toISOString(),
                 ip:req.connection.remoteAddress
@@ -76,7 +77,7 @@ exports.title=async (req,res)=>{
             }
         }
         await Database.prototype.addItem(params)
-        res.status(200).json({status:false,message:"New Artwork created"})
+        res.status(200).json({status:true,message:id})
     }
     else{
         const params={
