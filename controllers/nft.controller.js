@@ -99,7 +99,7 @@ exports.title=async (req,res)=>{
                 ExpressionAttributeValues:{":title":req.body.title}
             }
             await Database.prototype.updateItems(updatedParams)
-           res.status(200).json({status:true,message:"Artwork title updated successfully"})
+           res.status(200).json({status:true,message:req.body.artwork_id})
         }
 
     }
