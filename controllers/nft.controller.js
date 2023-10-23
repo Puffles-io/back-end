@@ -142,7 +142,7 @@ exports.placeholder_image=async (req,res)=>{
                 }
             }
     }catch(err){
-        res.staus(500).json({status:false,message:"Err: "+err})
+        res.status(500).json({status:false,message:"Err: "+err})
     }
 }
 exports.metadata=async (req,res)=>{
