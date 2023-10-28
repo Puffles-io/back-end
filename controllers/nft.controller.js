@@ -159,7 +159,25 @@ exports.metadata=async (req,res)=>{
             res.status(200).json({status:false,message:"Artwork id doesn't exist"})
         }
         else{
-            let cid=await IPFS.prototype.uploadImage(req.file)
+            const uploadedData = JSON.parse(req.file.buffer.toString());
+
+            // Add a key-value pair
+            uploadedData.image =results.cid;
+        
+            // Convert the modified data back to a buffer
+            const modifiedBuffer = Buffer.from(JSON.stringify(uploadedData));
+        
+            // Create a new Multer file object with the modified buffer
+            const modifiedFile = {
+              fieldname: req.file.fieldname,
+              originalname: req.file.originalname,
+              encoding: '7bit',
+              mimetype: 'application/json', // Change this to the appropriate MIME type
+              buffer: modifiedBuffer,
+              size: modifiedBuffer.length,
+            };
+        
+            let cid=await IPFS.prototype.uploadImage(modifiedFile)
             const updatedParams={
                 TableName:'puffles',
                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},

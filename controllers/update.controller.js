@@ -71,9 +71,9 @@ const DatabaseHelper = require('../models/nft.model');
                             const updatedParams={
                                 TableName:'puffles',
                                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                                UpdateExpression:"set #address=:address",
-                                ExpressionAttributeNames:{"#address":"address"},
-                                ExpressionAttributeValues:{":address":req.body.address}
+                                UpdateExpression:"set #address=:address,#mint_structure=:mint_structure",
+                                ExpressionAttributeNames:{"#address":"address","#mint_structure":"mint_structure"},
+                                ExpressionAttributeValues:{":address":req.body.address,":mint_structure":req.body.mint_structure}
                             }
                             await DatabaseHelper.prototype.updateItems(updatedParams)
                             res.status(200).json({status:true,message:"Artwork Title updated successfully"})
@@ -82,9 +82,9 @@ const DatabaseHelper = require('../models/nft.model');
                             const updatedParams={
                                 TableName:'puffles',
                                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                                UpdateExpression:"set #sale=:sale",
-                                ExpressionAttributeNames:{"#sale":"sale_date"},
-                                ExpressionAttributeValues:{":sale":req.body.sale_date}
+                                UpdateExpression:"set #sale=:sale,#mint_structure=:mint_structure",
+                                ExpressionAttributeNames:{"#sale":"sale_date","#mint_structure":"mint_structure"},
+                                ExpressionAttributeValues:{":sale":req.body.sale_date,":mint_structure":req.body.mint_structure}
                             }
                             await DatabaseHelper.prototype.updateItems(updatedParams)
                             res.status(200).json({status:true,message:"Artwork Sale Date updated successfully"})    
@@ -222,6 +222,43 @@ const DatabaseHelper = require('../models/nft.model');
 
                 }
             }catch(err){
+            error(err,req)
+            res.status(500).json({message:"Server Error"})
+        }
+    }
+    async Theme(req,res){
+        try{
+            if(!Boolean(req.body.artwork_id)){
+                res.status(200).json({status:false,message:"Missing data"})
+            }
+            else{
+                const params={
+                    TableName:'puffles',
+                    Key:{
+                        PK:`ADR#${req.user.address}`,
+                        SK:`ART#${req.body.artwork_id}`
+                        }
+                }
+                let results=await DatabaseHelper.prototype.getItem(params)
+                if(results===undefined){
+                    res.status(200).json({status:false,message:"Artwork doesn't exist"})
+                }
+                else{
+                    const updatedParams={
+                        TableName:'puffles',
+                        Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
+                        UpdateExpression:"set #theme=:theme",
+                        ExpressionAttributeNames:{"#theme":"theme"},
+                        ExpressionAttributeValues:{":theme":req.body.theme}
+                    }
+                    await DatabaseHelper.prototype.updateItems(updatedParams)
+                   
+                    res.status(200).json({status:true,message:"Theme updated successfuly"})
+                }
+
+                }
+            }catch(err){
+                console.log(err)
             error(err,req)
             res.status(500).json({message:"Server Error"})
         }

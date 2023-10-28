@@ -12,4 +12,5 @@ router.post('/address_saledate',passport.authenticate('jwt',{session:false}),Upd
 router.post('/whitelist',passport.authenticate('jwt',{session:false}),Update.prototype.Whitelist)
 router.post('/active_phase',passport.authenticate('jwt',{session:false}),Update.prototype.activePhase)
 router.post('/links',passport.authenticate('jwt',{session:false}),Update.prototype.List)
+router.post('/theme',passport.authenticate('jwt',{session:false}),Update.prototype.Theme)
 module.exports=router;
