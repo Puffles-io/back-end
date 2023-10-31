@@ -1,8 +1,9 @@
-const {writeFile}=require('../utils/utils')
+const {writeFile, writeMetadata}=require('../utils/utils')
 const error=require('../services/errorFormater');
 const S3=require('../utils/s3');
 const IPFS=require('../utils/ipfs')
 const fs=require('fs')
+const fsextra=require('fs-extra')
 const Database=require('../models/nft.model')
 const { uuid } = require('uuidv4');
 const path=require('path')
@@ -10,9 +11,15 @@ const path=require('path')
 exports.upload_v1=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
-                let id=writeFile(req.file,uuid())
-                res.status(200).json({status:true,id:id})
-                
+                if(!Boolean(req.body.artwork_id)){
+                    let id=writeFile(req.file,uuid())
+                    res.status(200).json({status:true,id:id})
+                }
+                else{
+                    let id=writeFile(req.file,req.body.artwork_id)
+                    res.status(200).json({status:true,id:id})
+                    
+                }
                 // let {cid,filename}= await uploadImage(req.body.file_url);
                 // let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
                 // let metadata_url=await uploadJSON(metadata)
@@ -50,6 +57,7 @@ exports.uploadtoIPFS=async (req,res)=>{
                     }
                 }
                 await Database.prototype.addItem(params)
+                fsextra.removeSync(parentDirectory)
                 res.status(200).json({status:true,message:"Artworks uploaded successfully"})
                 
             }
@@ -159,37 +167,70 @@ exports.metadata=async (req,res)=>{
             res.status(200).json({status:false,message:"Artwork id doesn't exist"})
         }
         else{
-            const uploadedData = JSON.parse(req.file.buffer.toString());
-
-            // Add a key-value pair
-            uploadedData.image =results.cid;
-        
-            // Convert the modified data back to a buffer
-            const modifiedBuffer = Buffer.from(JSON.stringify(uploadedData));
-        
-            // Create a new Multer file object with the modified buffer
-            const modifiedFile = {
-              fieldname: req.file.fieldname,
-              originalname: req.file.originalname,
-              encoding: '7bit',
-              mimetype: 'application/json', // Change this to the appropriate MIME type
-              buffer: modifiedBuffer,
-              size: modifiedBuffer.length,
-            };
-        
-            let cid=await IPFS.prototype.uploadImage(modifiedFile)
+            writeMetadata(req.file,req.body.artwork_id)
+            res.status(200).json({status:true,message:"Saved Metadata files"})
+        }
+    }catch(err){
+        res.sttaus(500).json({status:false,message:"Err: "+err})
+    }
+}
+exports.metadataUpload=async (req,res)=>{
+    try{
+        if(!Boolean(req.body.artwork_id)){
+            res.status(200).json({status:false,message:"Missing artwork id"})
+        }
+        else{
+            const parentDirectory = path.join(__dirname, '..',"utils","metadata",req.body.artwork_id);
+            if(fs.existsSync(parentDirectory)){
+                const params={
+                    TableName:'puffles',
+                    Key:{
+                        PK:`ADR#${req.user.address}`,
+                        SK:`ART#${req.body.id}`,
+                    }
+                }
+                let results=await Database.prototype.getItem(params)
+        if(results===undefined){
+            res.status(200).json({status:false,message:"Files with given artwork id doesn't exist"})
+        }
+        else{
+            var count=0
+            fs.readdirSync(parentDirectory).forEach((file)=>{
+                const filepath=path.join(parentDirectory,file)
+                if(path.extname(file)===".json"){
+                    try{
+                        const data=fs.readFileSync(filepath,'utf8')
+                        const jsonData=JSON.parse(data)
+                        jsonData.image=`https://${results.cid}.ipfs.dweb.link/${results.filenames[count]}`
+                        count+=1;
+                        const modifiedData = JSON.stringify(jsonData, null, 2);
+                        // Write the modified data back to the file synchronously
+                        fs.writeFileSync(filepath, modifiedData, 'utf8');
+                        
+                    }catch(err){
+                        console.log(err)
+                    }
+                }
+            })
+            let files=await IPFS.prototype.uploadFiles(req.body.id)
             const updatedParams={
                 TableName:'puffles',
                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
                 UpdateExpression:"set #metadata=:metadata",
                 ExpressionAttributeNames:{"#metadata":"metadata"},
-                ExpressionAttributeValues:{":metadata":cid}
+                ExpressionAttributeValues:{":metadata":files.cid}
             }
-            await Database.prototype.updateItems(updatedParams)
-            res.status(200).json({status:true,message:cid})
+            await DatabaseHelper.prototype.updateItems(updatedParams)
+            fsextra.removeSync(parentDirectory)
+            res.status(200).json({status:true,message:"Metadata uploaded successfully"})
+
+        }
+
+            }
         }
     }catch(err){
-        res.sttaus(500).json({status:false,message:"Err: "+err})
+        console.log(err)
+        res.status(500).json({status:false,message:"Server Error"})
     }
 }
 exports.get_nfts=async (req,res)=>{

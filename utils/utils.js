@@ -25,11 +25,16 @@ function writeFile(file,id){
   if(!fs.existsSync(idfolder)){
     fs.mkdirSync(idfolder,{recursive:true})
   }
-  const file_extension=file.originalname.split('.')
-                
-  const filename=Date.now().toString()+file_extension[file_extension.length-1]
-  
-  const tempPath = path.join(idfolder, filename);
+  const tempPath = path.join(idfolder, file,originalname);
+  fs.writeFileSync(tempPath,file.buffer)
+  return id 
+}
+function writeMetadata(file,id){
+  let idfolder=path.join(__dirname,"metadata",id)
+  if(!fs.existsSync(idfolder)){
+    fs.mkdirSync(idfolder,{recursive:true})
+  }
+  const tempPath = path.join(idfolder, file.originalname);
   fs.writeFileSync(tempPath,file.buffer)
   return id 
 }
@@ -76,3 +81,4 @@ module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
 module.exports.updatedata=updatedata
 module.exports.writeFile=writeFile
+module.exports.writeMetadata=writeMetadata;
