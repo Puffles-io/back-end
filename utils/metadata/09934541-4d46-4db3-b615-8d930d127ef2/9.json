@@ -1,0 +1,42 @@
+{
+  "name": "Rocket Boys #9",
+  "description": "Rocket Boys NFTs",
+  "image": "ipfs://NewUriToReplace/9.png",
+  "dna": "5c70e5481e4fac95c5093ab87d5f316566543dc3",
+  "edition": 9,
+  "date": 1693342282844,
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Lime Emoji Texture"
+    },
+    {
+      "trait_type": "Back",
+      "value": "Chemical Barrel"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Light Blue"
+    },
+    {
+      "trait_type": "Wearing",
+      "value": "Emoji T Shirt"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Turtles Shell"
+    },
+    {
+      "trait_type": "Eye",
+      "value": "Bloodshot Eyes"
+    },
+    {
+      "trait_type": "Ear",
+      "value": "Double Hoop Black Earring"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Futuristic Mask"
+    }
+  ]
+}

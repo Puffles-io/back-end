@@ -25,7 +25,7 @@ function writeFile(file,id){
   if(!fs.existsSync(idfolder)){
     fs.mkdirSync(idfolder,{recursive:true})
   }
-  const tempPath = path.join(idfolder, file,originalname);
+  const tempPath = path.join(idfolder,file.originalname);
   fs.writeFileSync(tempPath,file.buffer)
   return id 
 }
