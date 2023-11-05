@@ -186,7 +186,7 @@ exports.metadataUpload=async (req,res)=>{
                     TableName:'puffles',
                     Key:{
                         PK:`ADR#${req.user.address}`,
-                        SK:`ART#${req.body.id}`,
+                        SK:`ART#${req.body.artwork_id}`,
                     }
                 }
                 let results=await Database.prototype.getItem(params)
@@ -194,24 +194,25 @@ exports.metadataUpload=async (req,res)=>{
             res.status(200).json({status:false,message:"Files with given artwork id doesn't exist"})
         }
         else{
-            var count=0
-            fs.readdirSync(parentDirectory).forEach((file)=>{
-                const filepath=path.join(parentDirectory,file)
-                if(path.extname(file)===".json"){
+            let filedata=fs.readdirSync(parentDirectory)
+            for(let i=0;i<filedata.length;i++){
+                const filepath=path.join(parentDirectory,filedata[i])
+                if(path.extname(filedata[i])===".json"){
                     try{
+                        console.log("results: ",results)
                         const data=fs.readFileSync(filepath,'utf8')
                         const jsonData=JSON.parse(data)
-                        jsonData.image=`https://${results.cid}.ipfs.dweb.link/${results.filenames[count]}`
-                        count+=1;
+                        jsonData.image=`https://${results.Item.cid}.ipfs.dweb.link/${results.Item.filenames[i]}`
                         const modifiedData = JSON.stringify(jsonData, null, 2);
                         // Write the modified data back to the file synchronously
                         fs.writeFileSync(filepath, modifiedData, 'utf8');
-                        
                     }catch(err){
                         console.log(err)
                     }
                 }
-            })
+            
+            }
+
             
             let files=await IPFS.prototype.uploadMetadata(req.body.artwork_id)
             const updatedParams={
@@ -223,7 +224,7 @@ exports.metadataUpload=async (req,res)=>{
             }
             await Database.prototype.updateItems(updatedParams)
             
-            fsextra.removeSync(parentDirectory)
+           // fsextra.removeSync(parentDirectory)
             res.status(200).json({status:true,message:"Metadata uploaded successfully",cid:files.cid})
 
         }
