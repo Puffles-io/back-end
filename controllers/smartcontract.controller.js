@@ -54,7 +54,7 @@ exports.get_address=async (req,res)=>{
                 res.status(200).json({status:false,message:"Artwork with given id does not exist"})
             }
             else{
-                res.status(200).json({status:true,messsage:address.Items[0]})
+                res.status(200).json({status:true,message:address.Items[0]})
             }
         }
         }
