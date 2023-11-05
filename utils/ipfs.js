@@ -41,6 +41,23 @@ class IPFS{
             }
         })
     }
+    async uploadMetadata(id){
+        return new Promise(async (resolve,reject)=>{
+            try{
+               
+                const tempPath = path.join(__dirname, "metadata",id);
+                let files=await getFilesFromPath(`${tempPath}/`)
+                const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
+                const cid=await storage.put(files,{wrapWithDirectory:false})
+                let response={files:fs.readdirSync(`${tempPath}/`),cid:cid}
+                fs.rmSync(tempPath,{recursive:true,force:true})
+                resolve(response)
+            }
+            catch(err){
+                reject(err)
+            }
+        })
+    }
     
     async deleteFiles(cid){
         return new Promise(async(resolve,reject)=>{

@@ -212,7 +212,8 @@ exports.metadataUpload=async (req,res)=>{
                     }
                 }
             })
-            let files=await IPFS.prototype.uploadFiles(req.body.id)
+            
+            let files=await IPFS.prototype.uploadMetadata(req.body.artwork_id)
             const updatedParams={
                 TableName:'puffles',
                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
@@ -220,9 +221,10 @@ exports.metadataUpload=async (req,res)=>{
                 ExpressionAttributeNames:{"#metadata":"metadata"},
                 ExpressionAttributeValues:{":metadata":files.cid}
             }
-            await DatabaseHelper.prototype.updateItems(updatedParams)
+            await Database.prototype.updateItems(updatedParams)
+            
             fsextra.removeSync(parentDirectory)
-            res.status(200).json({status:true,message:"Metadata uploaded successfully"})
+            res.status(200).json({status:true,message:"Metadata uploaded successfully",cid:files.cid})
 
         }
 
