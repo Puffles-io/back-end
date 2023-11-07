@@ -71,9 +71,9 @@ const DatabaseHelper = require('../models/nft.model');
                             const updatedParams={
                                 TableName:'puffles',
                                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                                UpdateExpression:"set #address=:address,#mint_structure=:mint_structure,#chain=:chain,#revenue_split_address=:revenue_split_address",
-                                ExpressionAttributeNames:{"#address":"address","#mint_structure":"mint_structure","#chain":"chain","#revenue_split_address":"revenue_split_address"},
-                                ExpressionAttributeValues:{":address":req.body.address,":mint_structure":req.body.mint_structure,":chain":req.body.chain,":revenue_split_address":req.body.revenue_split_address}
+                                UpdateExpression:"set #address=:address,#mint_structure=:mint_structure,#chain=:chain,#revenue_split_address=:revenue_split_address,#revenue_shares=:revenue_shares",
+                                ExpressionAttributeNames:{"#address":"address","#mint_structure":"mint_structure","#chain":"chain","#revenue_split_address":"revenue_split_address","#revenue_shares":"revenue_shares"},
+                                ExpressionAttributeValues:{":address":req.body.address,":mint_structure":req.body.mint_structure,":chain":req.body.chain,":revenue_split_address":req.body.revenue_split_address,":revenue_shares":req.body.revenue_shares}
                             }
                             await DatabaseHelper.prototype.updateItems(updatedParams)
                             res.status(200).json({status:true,message:"Artwork Title updated successfully"})
@@ -82,9 +82,9 @@ const DatabaseHelper = require('../models/nft.model');
                             const updatedParams={
                                 TableName:'puffles',
                                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                                UpdateExpression:"set #sale=:sale,#mint_structure=:mint_structure,#chain=:chain,#revenue_split_address=:revenue_split_address",
-                                ExpressionAttributeNames:{"#sale":"sale_date","#mint_structure":"mint_structure","#chain":"chain","#revenue_split_address":"revenue_split_address"},
-                                ExpressionAttributeValues:{":sale":req.body.sale_date,":mint_structure":req.body.mint_structure,":chain":req.body.chain,":revenue_split_address":req.body.revenue_split_address}
+                                UpdateExpression:"set #sale=:sale,#mint_structure=:mint_structure,#chain=:chain,#revenue_split_address=:revenue_split_address,#revenue_shares=:revenue_shares",
+                                ExpressionAttributeNames:{"#sale":"sale_date","#mint_structure":"mint_structure","#chain":"chain","#revenue_split_address":"revenue_split_address","#revenue_shares":"revenue_shares"},
+                                ExpressionAttributeValues:{":sale":req.body.sale_date,":mint_structure":req.body.mint_structure,":chain":req.body.chain,":revenue_split_address":req.body.revenue_split_address,":revenue_shares":req.body.revenue_shares}
                             }
                             await DatabaseHelper.prototype.updateItems(updatedParams)
                             res.status(200).json({status:true,message:"Artwork Sale Date updated successfully"})    
