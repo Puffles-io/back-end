@@ -205,7 +205,9 @@ exports.metadataUpload=async (req,res)=>{
                         jsonData.image=`https://${results.Item.cid}.ipfs.dweb.link/${results.Item.filenames[i]}`
                         const modifiedData = JSON.stringify(jsonData, null, 2);
                         // Write the modified data back to the file synchronously
-                        fs.writeFileSync(filepath, modifiedData, 'utf8');
+                        const parts = filepath.split(".");
+    fs.writeFileSync(parts[0], modifiedData, 'utf8');
+    fs.unlinkSync(filepath)
                     }catch(err){
                         console.log(err)
                     }
