@@ -171,7 +171,7 @@ exports.metadata=async (req,res)=>{
             res.status(200).json({status:true,message:"Saved Metadata files"})
         }
     }catch(err){
-        res.sttaus(500).json({status:false,message:"Err: "+err})
+        res.staus(500).json({status:false,message:"Err: "+err})
     }
 }
 exports.metadataUpload=async (req,res)=>{
@@ -198,8 +198,6 @@ exports.metadataUpload=async (req,res)=>{
             for(let i=0;i<filedata.length;i++){
                 const filepath=path.join(parentDirectory,filedata[i])
                 if(path.extname(filedata[i])===".json"){
-                    
-                        console.log("results: ",results)
                         const data=fs.readFileSync(filepath,'utf8')
                         const jsonData=JSON.parse(data)
                         jsonData.image=`https://${results.Item.cid}.ipfs.dweb.link/${results.Item.filenames[i]}`
