@@ -198,7 +198,7 @@ exports.metadataUpload=async (req,res)=>{
             for(let i=0;i<filedata.length;i++){
                 const filepath=path.join(parentDirectory,filedata[i])
                 if(path.extname(filedata[i])===".json"){
-                    try{
+                    
                         console.log("results: ",results)
                         const data=fs.readFileSync(filepath,'utf8')
                         const jsonData=JSON.parse(data)
@@ -208,14 +208,9 @@ exports.metadataUpload=async (req,res)=>{
                         const parts = filepath.split(".");
     fs.writeFileSync(parts[0], modifiedData, 'utf8');
     fs.unlinkSync(filepath)
-                    }catch(err){
-                        console.log(err)
-                    }
                 }
             
             }
-
-            
             let files=await IPFS.prototype.uploadMetadata(req.body.artwork_id)
             const updatedParams={
                 TableName:'puffles',
@@ -235,7 +230,7 @@ exports.metadataUpload=async (req,res)=>{
         }
     }catch(err){
         console.log(err)
-        res.status(500).json({status:false,message:"Server Error"})
+        res.status(500).json({status:false,message:"Server Error"+err})
     }
 }
 exports.get_nfts=async (req,res)=>{
