@@ -102,9 +102,9 @@ exports.title=async (req,res)=>{
             const updatedParams={
                 TableName:'puffles',
                 Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                UpdateExpression:"set #title=:title",
-                ExpressionAttributeNames:{"#title":"title"},
-                ExpressionAttributeValues:{":title":req.body.title}
+                UpdateExpression:"set #title=:title,#URI=:URI",
+                ExpressionAttributeNames:{"#title":"title","#URI":"URI"},
+                ExpressionAttributeValues:{":title":req.body.title,":URI":req.body.title.toLowerCase().replace(/\s/g,'')}
             }
             await Database.prototype.updateItems(updatedParams)
            res.status(200).json({status:true,message:req.body.artwork_id})
