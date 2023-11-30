@@ -17,7 +17,7 @@ exports.pages=async (req,res)=>{
                     TableName:'puffles',
                     Item:{
                         PK:`ADR#${req.user.address}`,
-                        SK:`PGE#${req.body.artwork_id}`,
+                        SK:`ART#${req.body.artwork_id}`,
                         ip:req.connection.remoteAddress,
                         bg_image:result.body.bg_image,
                         filename:result.filename,

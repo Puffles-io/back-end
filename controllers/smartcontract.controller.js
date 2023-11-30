@@ -43,9 +43,9 @@ exports.get_address=async (req,res)=>{
             else{
             const params = {
                 TableName: 'puffles', // Replace with your table name
-                FilterExpression: 'title = :title',
+                FilterExpression: 'URI = :URI',
                 ExpressionAttributeValues: {
-                    ':title': req.body.title
+                    ':URI': req.body.URI
                 }
             };
             let address=await DatabaseHelper.prototype.matchItem(params)

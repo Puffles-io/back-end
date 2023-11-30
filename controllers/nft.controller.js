@@ -258,7 +258,7 @@ exports.get_nfts=async (req,res)=>{
         }
     })
 }
-exports.whitelistByTitle=async (req,res)=>{
+exports.whitelistByURI=async (req,res)=>{
     return new Promise(async function(resolve,reject){
         try{
             if(!Boolean(req.body.title)){
@@ -267,9 +267,9 @@ exports.whitelistByTitle=async (req,res)=>{
             else{
             const params = {
                 TableName: 'puffles', // Replace with your table name
-                FilterExpression: 'title = :title',
+                FilterExpression: 'URI = :URI',
                 ExpressionAttributeValues: {
-                    ':title': req.body.title
+                    ':URI': req.body.URI
                 }
             };
             let address=await Database.prototype.matchItem(params)
