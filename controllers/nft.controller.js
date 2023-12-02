@@ -79,13 +79,14 @@ exports.title=async (req,res)=>{
                 PK:`ADR#${req.user.address}`,
                 SK:`ART#${id}`,
                 title:req.body.title,
+                URI:req.body.title.toLowerCase().replace(/\s/g,''),
                 timestamp:new Date().toISOString(),
                 ip:req.connection.remoteAddress
 
             }
         }
         await Database.prototype.addItem(params)
-        res.status(200).json({status:true,message:id})
+        res.status(200).json({status:true,message:id,URI:req.body.title.toLowerCase().replace(/\s/g,'')})
     }
     else{
         const params={
@@ -107,7 +108,7 @@ exports.title=async (req,res)=>{
                 ExpressionAttributeValues:{":title":req.body.title,":URI":req.body.title.toLowerCase().replace(/\s/g,'')}
             }
             await Database.prototype.updateItems(updatedParams)
-           res.status(200).json({status:true,message:req.body.artwork_id})
+           res.status(200).json({status:true,message:req.body.artwork_id,URI:req.body.title.toLowerCase().replace(/\s/g,'')})
         }
 
     }
