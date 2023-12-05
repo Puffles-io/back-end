@@ -2,16 +2,16 @@ const DatabaseHelper = require('../models/nft.model');
 const error=require('../services/errorFormater');
 class DataExistence
 {
-    async isCollectionExistByName(req,res)
+    async isCollectionExistByURI(req,res)
     {
         try 
         {
-            const {name}=req.params;
+            const {URI}=req.params;
            const params={
                 TableName:'puffles',
-                KeyConditionExpression:"#PK=:PK and #title=:title and begins_with(#SK,:SK)",
-                ExpressionAttributeNames:{"#PK":"PK","#SK":":SK","#title":":title"},
-                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"ART#",":title":name}
+                KeyConditionExpression:"#PK=:PK and #URI=:URI and begins_with(#SK,:SK)",
+                ExpressionAttributeNames:{"#PK":"PK","#SK":":SK","#URI":":URI"},
+                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"ART#",":URI":URI}
 
             }
             const data=await DatabaseHelper.prototype.getItems(params)
