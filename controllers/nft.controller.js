@@ -73,45 +73,43 @@ exports.title=async (req,res)=>{
     try{
     if(!Boolean(req.body.artwork_id)){
         const id=uuid();
-        const params={
-            TableName:'puffles',
-            Item:{
-                PK:`ADR#${req.user.address}`,
-                SK:`ART#${id}`,
-                title:req.body.title,
-                URI:req.body.title.toLowerCase().replace(/\s/g,''),
-                timestamp:new Date().toISOString(),
-                ip:req.connection.remoteAddress
-
+        const searchParams = {
+            TableName: 'puffles',
+            KeyConditionExpression: 'URI = :URI',
+            ExpressionAttributeValues: {
+                ':URI': req.body.title.toLowerCase().replace(/\s/g,'')
             }
-        }
-        await Database.prototype.addItem(params)
-        res.status(200).json({status:true,message:id,URI:req.body.title.toLowerCase().replace(/\s/g,'')})
-    }
-    else{
-        const params={
-            TableName:'puffles',
-            Key:{
-                PK:`ADR#${req.user.address}`,
-                SK:`ART#${req.body.artwork_id}`
-                }
-        }
-        if(await Database.prototype.getItem(params) ===undefined){
-            res.status(200).json({status:true,message:"Artwork with given id doesnt exist"})
+        };
+        let nfts=await Database.prototype.getItems(searchParams)
+        console.log("metadata: ",nfts)
+        if(nfts===undefined){
+            res.status(200).json({status:false,message:"title already exists"})
         }
         else{
-            const updatedParams={
+            const params={
                 TableName:'puffles',
-                Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                UpdateExpression:"set #title=:title,#URI=:URI",
-                ExpressionAttributeNames:{"#title":"title","#URI":"URI"},
-                ExpressionAttributeValues:{":title":req.body.title,":URI":req.body.title.toLowerCase().replace(/\s/g,'')}
+                Key:{
+                    PK:`ADR#${req.user.address}`,
+                    SK:`ART#${req.body.artwork_id}`
+                    }
             }
-            await Database.prototype.updateItems(updatedParams)
-           res.status(200).json({status:true,message:req.body.artwork_id,URI:req.body.title.toLowerCase().replace(/\s/g,'')})
+            if(await Database.prototype.getItem(params) ===undefined){
+                res.status(200).json({status:true,message:"Artwork with given id doesnt exist"})
+            }
+            
+            else{
+                const updatedParams={
+                    TableName:'puffles',
+                    Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
+                    UpdateExpression:"set #title=:title,#URI=:URI,#URI_status::URI_status",
+                    ExpressionAttributeNames:{"#title":"title","#URI":"URI","#URI_status":"URI_status"},
+                    ExpressionAttributeValues:{":title":req.body.title,":URI":req.body.title.toLowerCase().replace(/\s/g,''),":URI_status":true}
+                }
+                await Database.prototype.updateItems(updatedParams)
+               res.status(200).json({status:true,message:req.body.artwork_id,URI:req.body.title.toLowerCase().replace(/\s/g,'')})
+            }
         }
-
-    }
+        }
 }catch(err){
     res.status(500).json({message:"Err"+err})
 }

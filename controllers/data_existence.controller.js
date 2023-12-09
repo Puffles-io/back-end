@@ -9,14 +9,18 @@ class DataExistence
             const {URI}=req.params;
            const params={
                 TableName:'puffles',
-                KeyConditionExpression:"#PK=:PK and #URI=:URI and begins_with(#SK,:SK)",
-                ExpressionAttributeNames:{"#PK":"PK","#SK":":SK","#URI":":URI"},
-                ExpressionAttributeValues:{":PK":`ADR#${req.user.address}`,":SK":"ART#",":URI":URI}
+                KeyConditionExpression:"#URI=:URI",
+                ExpressionAttributeNames:{"#URI":":URI"},
+                ExpressionAttributeValues:{":URI":URI}
 
             }
             const data=await DatabaseHelper.prototype.getItems(params)
-            res.json(data.Items.length>0);
-        } 
+            if(data===undefined){
+                res.json({status:false})
+            } 
+            else{
+            res.json(data.Items[0].URI_status);
+    }}
         catch (err) 
         {
             error(err,req);
