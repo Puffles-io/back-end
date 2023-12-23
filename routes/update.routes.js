@@ -14,4 +14,5 @@ router.post('/active_phase',passport.authenticate('jwt',{session:false}),Update.
 router.post('/links',passport.authenticate('jwt',{session:false}),Update.prototype.List)
 router.post('/theme',passport.authenticate('jwt',{session:false}),Update.prototype.Theme)
 router.post('/page_description',passport.authenticate('jwt',{session:false}),Update.prototype.Page_Description)
+router.post('/URI',passport.authenticate('jwt',{session:false}),Update.prototype.URI)
 module.exports=router;
