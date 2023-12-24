@@ -433,9 +433,9 @@ const DatabaseHelper = require('../models/nft.model');
                     const updatedParams={
                         TableName:'puffles',
                         Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                        UpdateExpression:"set #URI=:URI",
-                        ExpressionAttributeNames:{"#URI":"URI"},
-                        ExpressionAttributeValues:{":URI":req.body.URI}
+                        UpdateExpression:"set #URI=:URI,#URI_status=:URI_status",
+                        ExpressionAttributeNames:{"#URI":"URI","#URI_status":"URI_status"},
+                        ExpressionAttributeValues:{":URI":req.body.URI,":URI_status":true}
                     }
                     await DatabaseHelper.prototype.updateItems(updatedParams)
                    

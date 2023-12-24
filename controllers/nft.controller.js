@@ -72,19 +72,8 @@ exports.uploadtoIPFS=async (req,res)=>{
 exports.title=async (req,res)=>{
     try{
     if(!Boolean(req.body.artwork_id)){
-        const id=uuid();
-        const searchParams = {
-            TableName: 'puffles',
-            KeyConditionExpression: 'URI = :URI',
-            ExpressionAttributeValues: {
-                ':URI': req.body.title.toLowerCase().replace(/\s/g,'')
-            }
-        };
-        let nfts=await Database.prototype.getItems(searchParams)
-        console.log("metadata: ",nfts)
-        if(nfts===undefined){
-            res.status(200).json({status:false,message:"title already exists"})
-        }
+       res.status(200).json({status:false,message:"Please send Artwork ID"})
+    }
         else{
             const params={
                 TableName:'puffles',
@@ -101,7 +90,7 @@ exports.title=async (req,res)=>{
                 const updatedParams={
                     TableName:'puffles',
                     Key:{PK:`ADR#${req.user.address}`,SK:`ART#${req.body.artwork_id}`},
-                    UpdateExpression:"set #title=:title,#URI=:URI,#URI_status::URI_status",
+                    UpdateExpression:"set #title=:title,#URI=:URI,#URI_status=:URI_status",
                     ExpressionAttributeNames:{"#title":"title","#URI":"URI","#URI_status":"URI_status"},
                     ExpressionAttributeValues:{":title":req.body.title,":URI":req.body.title.toLowerCase().replace(/\s/g,''),":URI_status":true}
                 }
@@ -109,7 +98,7 @@ exports.title=async (req,res)=>{
                res.status(200).json({status:true,message:req.body.artwork_id,URI:req.body.title.toLowerCase().replace(/\s/g,'')})
             }
         }
-        }
+        
 }catch(err){
     res.status(500).json({message:"Err"+err})
 }
