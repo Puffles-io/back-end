@@ -103,6 +103,31 @@ exports.title=async (req,res)=>{
     res.status(500).json({message:"Err"+err})
 }
 }
+exports.artByID=async (req,res)=>{
+    try{
+        if(!Boolean(req.body.artwork_id)){
+            res.status(200).json({status:false,message:"Missing data"})
+        }
+        else{
+            const params={
+                TableName:'puffles',
+                    Key:{
+                    PK:`ADR#${req.user.address}`,
+                    SK:`ART#${req.body.artwork_id}`
+                    }
+            }
+            let results=await Database.prototype.getItem(params)
+            if(params===undefined){
+                res.status(200).json({status:false,message:"Artwork with given ID doesn't exist"})
+            }
+            else{
+                res.status(200).json({status:true,message:results.Item})
+            }
+        }
+    }catch(err){
+        res.status(500).json({status:false,message:err})
+    }
+}
 exports.placeholder_image=async (req,res)=>{
     try{
             if(!Boolean(req.body.artwork_id)){

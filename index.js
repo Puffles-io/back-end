@@ -31,7 +31,9 @@ app.use(morgan(':method , :url , :status , :res[content-length] bytes , :respons
 {
     stream: fs.createWriteStream('./access.log', {flags: 'a'})
 }));
-
+app.get('/deploy',(req,res)=>{
+  res.status(200).json({status:200,message:"deployed"})
+})
 require('./routes/login.routes.js')(app);
 require('./routes/nft.routes.js')(app);
 require('./routes/pages.routes.js')(app);
@@ -44,4 +46,4 @@ app.use('/update',require('./routes/update.routes'));
  */
 
 // Server listens on http://localhost:3000
-app.listen(5000,()=>console.log("server listening on port 5000"));
+app.listen(8080,()=>console.log("server listening on port 8080"));
