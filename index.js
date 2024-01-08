@@ -32,7 +32,10 @@ app.use(morgan(':method , :url , :status , :res[content-length] bytes , :respons
     stream: fs.createWriteStream('./access.log', {flags: 'a'})
 }));
 app.get('/deploy',(req,res)=>{
-  res.status(200).json({status:200,message:"deployed"})
+  res.status(200).json({status:true,message:"deployed"})
+})
+app.get('/healthcheck',(req,res)=>{
+res.send({status:'Working'})
 })
 require('./routes/login.routes.js')(app);
 require('./routes/nft.routes.js')(app);
