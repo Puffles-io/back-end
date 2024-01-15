@@ -110,6 +110,30 @@ class IPFS{
                 }
             })
     }
+    async getJSON(cid){
+        return new Promise(async (resolve,reject)=>{
+            try{
+                const storage=new Web3Storage({token:process.env.WEB3_TOKEN})
+                const jsonArray=await storage.get(cid)
+                let blobs=await jsonArray.files()
+                let array=[],urls=[]
+                for(let i=0;i<blobs.length;i++){
+
+                    const blob = blobs[i];
+                    const arrayBuffer = await blob.arrayBuffer();
+                     const jsonString = Buffer.from(arrayBuffer).toString('utf8');
+                    const object=JSON.parse(jsonString)
+                     array[i]=object
+                    urls[i]=object.image
+                }
+                resolve({array,urls})
+                    
+                }
+                catch(err){
+                    reject(err)
+                }
+            })
+    }
     async getJsonArray(cid)
     {
       return new Promise(async (resolve,reject)=>

@@ -1,7 +1,26 @@
 const DatabaseHelper = require('../models/nft.model');
 const error=require('../services/errorFormater');
+const IPFS = require('../utils/ipfs');
+
 class DataExistence
 {
+    async getJsonFiles(req,res){
+        try{
+            if(!Boolean(req.body.cid)){
+                res.status(200).json({status:false,message:"Missing data"})
+            }
+            else{
+               let files=await IPFS.prototype.getJSON(req.body.cid)
+               res.status(200).json({status:200,metadata:files.array,urls:files.urls})
+
+            }
+
+        }catch(err){
+            console.log(err)
+            error(err,req);
+            res.status(500).send("server error!");
+        }
+    }
     async isCollectionExistByURI(req,res)
     {
         try 
