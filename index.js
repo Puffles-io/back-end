@@ -44,6 +44,7 @@ require('./routes/smartcontract.routes.js')(app)
 app.use('/existence',require('./routes/data_existence.routes'))
 app.use('/delete',require('./routes/delete.routes'));
 app.use('/update',require('./routes/update.routes'));
+app.use('/file',require('./routes/file.routes'))
 /**
  * -------------- SERVER ----------------
  */
