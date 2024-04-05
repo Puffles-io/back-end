@@ -13,4 +13,5 @@ module.exports=(app)=>{
     app.post('/IPFSupload',passport.authenticate('jwt',{session:false}),NFTController.uploadtoIPFS)
     app.post('/whitelist_by_URI',NFTController.whitelistByURI)
     app.post('/art_by_ID',passport.authenticate('jwt',{session:false}),NFTController.artByID)
+    app.post('/metadataUrls',passport.authenticate('jwt',{session:false}),NFTController.metadataUrls)
 }

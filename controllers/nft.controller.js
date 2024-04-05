@@ -34,6 +34,29 @@ exports.upload_v1=async (req,res)=>{
         }
     })
 }
+
+exports.metadataUrls=async (req,res)=>{
+
+    if(!Boolean(req.body.metadataUrls)){
+        res.status(200).json({status:false,message:"Missing metadata urls"})
+    }
+    else{
+        let id=uuid()
+        const params={
+            TableName:'puffles',
+            Item:{
+                PK:`ADR#${req.user.address}`,
+                SK:`ART#${id}`,
+                metadataUrls:req.body.metadataUrls,
+                timestamp:new Date().toISOString(),
+                ip:req.connection.remoteAddress
+
+            }
+        }
+        await Database.prototype.addItem(params)
+        res.status(200).json({status:true,id:id})
+    }
+}
 exports.uploadtoIPFS=async (req,res)=>{
     try{
         console.log("req body",req.body)
