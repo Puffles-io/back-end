@@ -107,12 +107,10 @@ exports.title = async (req, res) => {
         },
       };
       if ((await Database.prototype.getItem(params)) === undefined) {
-        res
-          .status(200)
-          .json({
-            status: true,
-            message: "Artwork with given id doesnt exist",
-          });
+        res.status(200).json({
+          status: true,
+          message: "Artwork with given id doesnt exist",
+        });
       } else {
         const updatedParams = {
           TableName: "puffles",
@@ -121,28 +119,28 @@ exports.title = async (req, res) => {
             SK: `ART#${req.body.artwork_id}`,
           },
           UpdateExpression:
-            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#thumbnail=:thumbnail",
+            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#thumbnail=:thumbnail,#delayed_reveal=:delayed_reveal",
           ExpressionAttributeNames: {
             "#title": "title",
             "#URI": "URI",
             "#URI_status": "URI_status",
             "#thumbnail": "thumbnail",
+            "#delayed_reveal": "delayed_reveal",
           },
           ExpressionAttributeValues: {
             ":title": req.body.title,
             ":URI": req.body.title.toLowerCase().replace(/\s/g, ""),
             ":URI_status": true,
             ":thumbnail": req.body.thumbnail,
+            ":delayed_reveal": req.body.delayed_reveal,
           },
         };
         await Database.prototype.updateItems(updatedParams);
-        res
-          .status(200)
-          .json({
-            status: true,
-            message: req.body.artwork_id,
-            URI: req.body.title.toLowerCase().replace(/\s/g, ""),
-          });
+        res.status(200).json({
+          status: true,
+          message: req.body.artwork_id,
+          URI: req.body.title.toLowerCase().replace(/\s/g, ""),
+        });
       }
     }
   } catch (err) {
@@ -163,12 +161,10 @@ exports.artByID = async (req, res) => {
       };
       let results = await Database.prototype.getItem(params);
       if (params === undefined) {
-        res
-          .status(200)
-          .json({
-            status: false,
-            message: "Artwork with given ID doesn't exist",
-          });
+        res.status(200).json({
+          status: false,
+          message: "Artwork with given ID doesn't exist",
+        });
       } else {
         res.status(200).json({ status: true, message: results.Item });
       }
@@ -273,12 +269,10 @@ exports.metadataUpload = async (req, res) => {
         };
         let results = await Database.prototype.getItem(params);
         if (results === undefined) {
-          res
-            .status(200)
-            .json({
-              status: false,
-              message: "Files with given artwork id doesn't exist",
-            });
+          res.status(200).json({
+            status: false,
+            message: "Files with given artwork id doesn't exist",
+          });
         } else {
           let filedata = fs.readdirSync(parentDirectory);
           for (let i = 0; i < filedata.length; i++) {
@@ -308,13 +302,11 @@ exports.metadataUpload = async (req, res) => {
           await Database.prototype.updateItems(updatedParams);
 
           // fsextra.removeSync(parentDirectory)
-          res
-            .status(200)
-            .json({
-              status: true,
-              message: "Metadata uploaded successfully",
-              cid: files.cid,
-            });
+          res.status(200).json({
+            status: true,
+            message: "Metadata uploaded successfully",
+            cid: files.cid,
+          });
         }
       }
     }
@@ -365,12 +357,10 @@ exports.whitelistByURI = async (req, res) => {
         };
         let address = await Database.prototype.matchItem(params);
         if (address === undefined) {
-          res
-            .status(200)
-            .json({
-              status: false,
-              message: "Artwork with given id does not exist",
-            });
+          res.status(200).json({
+            status: false,
+            message: "Artwork with given id does not exist",
+          });
         } else {
           res
             .status(200)
