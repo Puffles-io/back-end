@@ -147,6 +147,53 @@ exports.title = async (req, res) => {
     res.status(500).json({ message: "Err" + err });
   }
 };
+
+exports.sortTitle = async (req, res) => {
+  try {
+    const params = {
+      TableName: "puffles",
+      KeyConditionExpression: "PK = :pk",
+      ExpressionAttributeValues: {
+        ":pk": `ADR#${req.user.address}`,
+      },
+    };
+    let results = await Database.prototype.getItems(params);
+    if (results === undefined) {
+      res
+        .status(200)
+        .json({ status: false, message: "User does not have any collections" });
+    } else {
+      if (Boolean(req.body.order)) {
+        if (req.body.order == "INCREASING") {
+          results.Items = results.Items.sort((a, b) => {
+            const dateA = new Date(a.timestamp);
+            const dateB = new Date(b.timestamp);
+
+            // Compare the dates and return the result
+            return dateA - dateB;
+          });
+        } else if (req.body.order == "DECREASING") {
+          results.Items = results.Items.sort((a, b) => {
+            const dateA = new Date(a.timestamp);
+            const dateB = new Date(b.timestamp);
+
+            return dateB - dateA; // Compare in descending order (latest to earliest)
+          });
+        }
+      }
+      if (Boolean(req.body.title)) {
+        results.Items = results.Items.filter(
+          (obj) => obj.title && obj.title.includes(req.body.title)
+        );
+      }
+      res.status(200).json({ status: true, results: results.Items });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(200).json({ status: false, message: "Server error occurred" });
+  }
+};
+
 exports.artByID = async (req, res) => {
   try {
     if (!Boolean(req.body.artwork_id)) {
@@ -160,7 +207,7 @@ exports.artByID = async (req, res) => {
         },
       };
       let results = await Database.prototype.getItem(params);
-      if (params === undefined) {
+      if (results === undefined) {
         res.status(200).json({
           status: false,
           message: "Artwork with given ID doesn't exist",
