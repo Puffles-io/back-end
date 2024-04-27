@@ -163,27 +163,28 @@ exports.sortTitle = async (req, res) => {
         .status(200)
         .json({ status: false, message: "User does not have any collections" });
     } else {
-      if (Boolean(req.body.order)) {
-        if (req.body.order == "INCREASING") {
-          results.Items = results.Items.sort((a, b) => {
-            const dateA = new Date(a.timestamp);
-            const dateB = new Date(b.timestamp);
+      if (req.body.order == "INCREASING") {
+        results.Items = results.Items.sort((a, b) => {
+          const dateA = new Date(a.timestamp);
+          const dateB = new Date(b.timestamp);
 
-            // Compare the dates and return the result
-            return dateA - dateB;
-          });
-        } else if (req.body.order == "DECREASING") {
-          results.Items = results.Items.sort((a, b) => {
-            const dateA = new Date(a.timestamp);
-            const dateB = new Date(b.timestamp);
+          // Compare the dates and return the result
+          return dateA - dateB;
+        });
+      } else if (req.body.order == "DECREASING") {
+        results.Items = results.Items.sort((a, b) => {
+          const dateA = new Date(a.timestamp);
+          const dateB = new Date(b.timestamp);
 
-            return dateB - dateA; // Compare in descending order (latest to earliest)
-          });
-        }
+          return dateB - dateA; // Compare in descending order (latest to earliest)
+        });
       }
+
       if (Boolean(req.body.title)) {
         results.Items = results.Items.filter(
-          (obj) => obj.title && obj.title.includes(req.body.title)
+          (obj) =>
+            obj.title &&
+            obj.title.toLowerCase().includes(req.body.title.toLowerCase())
         );
       }
       res.status(200).json({ status: true, results: results.Items });
