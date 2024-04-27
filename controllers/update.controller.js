@@ -102,12 +102,10 @@ class Update {
               },
             };
             await DatabaseHelper.prototype.updateItems(updatedParams);
-            res
-              .status(200)
-              .json({
-                status: true,
-                message: "Artwork Title updated successfully",
-              });
+            res.status(200).json({
+              status: true,
+              message: "Artwork Title updated successfully",
+            });
           } else {
             const updatedParams = {
               TableName: "puffles",
@@ -135,12 +133,10 @@ class Update {
               },
             };
             await DatabaseHelper.prototype.updateItems(updatedParams);
-            res
-              .status(200)
-              .json({
-                status: true,
-                message: "Artwork Sale Date updated successfully",
-              });
+            res.status(200).json({
+              status: true,
+              message: "Artwork Sale Date updated successfully",
+            });
           }
         }
       }
@@ -393,12 +389,10 @@ class Update {
           };
           await DatabaseHelper.prototype.updateItems(updatedParams);
 
-          res
-            .status(200)
-            .json({
-              status: true,
-              message: "Active Phase updated successfuly",
-            });
+          res.status(200).json({
+            status: true,
+            message: "Active Phase updated successfuly",
+          });
         }
       }
     } catch (err) {
@@ -482,12 +476,10 @@ class Update {
           };
           await DatabaseHelper.prototype.updateItems(updatedParams);
 
-          res
-            .status(200)
-            .json({
-              status: true,
-              message: "Page Description updated successfuly",
-            });
+          res.status(200).json({
+            status: true,
+            message: "Page Description updated successfuly",
+          });
         }
       }
     } catch (err) {
@@ -516,13 +508,14 @@ class Update {
         } else {
           const URIparams = {
             TableName: "puffles",
-            KeyConditionExpression: "URI = :URI",
+            FilterExpression: "URI = :uri",
             ExpressionAttributeValues: {
-              ":URI": req.body.URI,
+              ":uri": req.body.URI,
             },
           };
-          let results = await Database.prototype.getItems(params);
-          if (results === undefined) {
+          let results = await DatabaseHelper.prototype.matchItem(URIparams);
+          console.log({ results });
+          if (results.Count) {
             res.status(200).json({ status: false });
           } else {
             const updatedParams = {
