@@ -1,4 +1,9 @@
-const { writeFile, writeMetadata } = require("../utils/utils");
+const {
+  writeFile,
+  writeMetadata,
+  base64ToBlob,
+  base64ToFileBlob,
+} = require("../utils/utils");
 const error = require("../services/errorFormater");
 const S3 = require("../utils/s3");
 const IPFS = require("../utils/ipfs");
@@ -221,6 +226,50 @@ exports.artByID = async (req, res) => {
     res.status(500).json({ status: false, message: err });
   }
 };
+
+exports.uploadThumbnail = async (req, res) => {
+  try {
+    if (!Boolean(req.body.artwork_id)) {
+      res.status(200).json({ status: false, message: "Missing data" });
+    } else {
+      const params = {
+        TableName: "puffles",
+        Key: {
+          PK: `ADR#${req.user.address}`,
+          SK: `ART#${req.body.artwork_id}`,
+        },
+      };
+      let results = await Database.prototype.getItem(params);
+      if (results === undefined) {
+        res
+          .status(200)
+          .json({ status: false, message: "Artwork id doesn't exist" });
+      }
+      let file = base64ToFileBlob(req.body.thumbnail, `image.${req.body.type}`);
+      let filedata = await S3.prototype.uploadImage(file);
+      const updatedParams = {
+        TableName: "puffles",
+        Key: {
+          PK: `ADR#${req.user.address}`,
+          SK: `ART#${req.body.artwork_id}`,
+        },
+        UpdateExpression: "set #thumbnail=:thumbnail",
+        ExpressionAttributeNames: {
+          "#thumbnail": "thumbnail",
+        },
+        ExpressionAttributeValues: {
+          ":thumbnail": filedata.filename,
+        },
+      };
+      await Database.prototype.updateItems(updatedParams);
+      res.status(200).json({ status: true, url: filedata.location });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(200).json({ status: false, message: "Internal server error" });
+  }
+};
+
 exports.placeholder_image = async (req, res) => {
   try {
     if (!Boolean(req.body.artwork_id)) {

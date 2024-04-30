@@ -58,4 +58,9 @@ module.exports = (app) => {
     passport.authenticate("jwt", { session: false }),
     NFTController.sortTitle
   );
+  app.post(
+    "/uploadThumbnail",
+    passport.authenticate("jwt", { session: false }),
+    NFTController.uploadThumbnail
+  );
 };
