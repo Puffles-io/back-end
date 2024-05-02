@@ -245,24 +245,64 @@ exports.uploadThumbnail = async (req, res) => {
           .status(200)
           .json({ status: false, message: "Artwork id doesn't exist" });
       }
-      let file = base64ToFileBlob(req.body.thumbnail, `image.${req.body.type}`);
-      let filedata = await S3.prototype.uploadImage(file);
-      const updatedParams = {
-        TableName: "puffles",
-        Key: {
-          PK: `ADR#${req.user.address}`,
-          SK: `ART#${req.body.artwork_id}`,
-        },
-        UpdateExpression: "set #thumbnail=:thumbnail",
-        ExpressionAttributeNames: {
-          "#thumbnail": "thumbnail",
-        },
-        ExpressionAttributeValues: {
-          ":thumbnail": filedata.filename,
-        },
-      };
-      await Database.prototype.updateItems(updatedParams);
-      res.status(200).json({ status: true, url: filedata.location });
+      if (!req.body.thumbnail.image.length && !req.body.bg.image.length) {
+        res
+          .status(200)
+          .json({
+            status: true,
+            message: "Neither thumbnail nor bg image was sent",
+          });
+      } else {
+        let thumbnail = null;
+        let bg = null;
+        if (req.body.thumbnail.image.length) {
+          let file = base64ToFileBlob(
+            req.body.thumbnail,
+            `image.${req.body.type}`
+          );
+          let filedata = await S3.prototype.uploadImage(file);
+          const updatedParams = {
+            TableName: "puffles",
+            Key: {
+              PK: `ADR#${req.user.address}`,
+              SK: `ART#${req.body.artwork_id}`,
+            },
+            UpdateExpression: "set #thumbnail=:thumbnail",
+            ExpressionAttributeNames: {
+              "#thumbnail": "thumbnail",
+            },
+            ExpressionAttributeValues: {
+              ":thumbnail": filedata.filename,
+            },
+          };
+          await Database.prototype.updateItems(updatedParams);
+          thumbnail = filedata.location;
+        }
+        if (req.body.bg.image.length) {
+          let file = base64ToFileBlob(
+            req.body.thumbnail,
+            `image.${req.body.type}`
+          );
+          let filedata = await S3.prototype.uploadImage(file);
+          const updatedParams = {
+            TableName: "puffles",
+            Key: {
+              PK: `ADR#${req.user.address}`,
+              SK: `ART#${req.body.artwork_id}`,
+            },
+            UpdateExpression: "set #bg=:bg",
+            ExpressionAttributeNames: {
+              "#bg": "bg",
+            },
+            ExpressionAttributeValues: {
+              ":bg": filedata.filename,
+            },
+          };
+          await Database.prototype.updateItems(updatedParams);
+          bg = filedata.location;
+        }
+        res.status(200).json({ status: true, thumbnail: thumbnail, bg: bg });
+      }
     }
   } catch (err) {
     console.log(err);

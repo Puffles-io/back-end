@@ -25,6 +25,9 @@ class DeleteNft {
         if (artworks.Item.hasOwnProperty("thumbnail")) {
           S3.prototype.deleteImage(artworks.Item.thumbnail);
         }
+        if (artworks.Item.hasOwnProperty("bg")) {
+          S3.prototype.deleteImage(artworks.Item.bg);
+        }
 
         await DatabaseHelper.prototype.deleteItem(params);
 
