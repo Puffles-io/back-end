@@ -246,19 +246,17 @@ exports.uploadThumbnail = async (req, res) => {
           .json({ status: false, message: "Artwork id doesn't exist" });
       }
       if (!req.body.thumbnail.image.length && !req.body.bg.image.length) {
-        res
-          .status(200)
-          .json({
-            status: true,
-            message: "Neither thumbnail nor bg image was sent",
-          });
+        res.status(200).json({
+          status: true,
+          message: "Neither thumbnail nor bg image was sent",
+        });
       } else {
         let thumbnail = null;
         let bg = null;
         if (req.body.thumbnail.image.length) {
           let file = base64ToFileBlob(
             req.body.thumbnail,
-            `image.${req.body.type}`
+            `image.${req.body.thumbnail.type}`
           );
           let filedata = await S3.prototype.uploadImage(file);
           const updatedParams = {
@@ -281,7 +279,7 @@ exports.uploadThumbnail = async (req, res) => {
         if (req.body.bg.image.length) {
           let file = base64ToFileBlob(
             req.body.thumbnail,
-            `image.${req.body.type}`
+            `image.${req.body.bg.type}`
           );
           let filedata = await S3.prototype.uploadImage(file);
           const updatedParams = {
