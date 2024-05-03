@@ -124,19 +124,19 @@ exports.title = async (req, res) => {
             SK: `ART#${req.body.artwork_id}`,
           },
           UpdateExpression:
-            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#thumbnail=:thumbnail,#delayed_reveal=:delayed_reveal",
+            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#delayed_reveal=:delayed_reveal",
           ExpressionAttributeNames: {
             "#title": "title",
             "#URI": "URI",
             "#URI_status": "URI_status",
-            "#thumbnail": "thumbnail",
+
             "#delayed_reveal": "delayed_reveal",
           },
           ExpressionAttributeValues: {
             ":title": req.body.title,
             ":URI": req.body.title.toLowerCase().replace(/\s/g, ""),
             ":URI_status": true,
-            ":thumbnail": req.body.thumbnail,
+
             ":delayed_reveal": req.body.delayed_reveal,
           },
         };
