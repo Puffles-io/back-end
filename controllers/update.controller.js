@@ -375,17 +375,36 @@ class Update {
             .status(200)
             .json({ status: false, message: "Artwork doesn't exist" });
         } else {
+          let updateExpression = "";
+          let expressionAttributeNames = {};
+          let expressionAttributeValues = {};
+          if (results.Item.hasOwnProperty("ever_mint_started")) {
+            updateExpression = "set #active_phase=:active_phase";
+            expressionAttributeNames = { "#active_phase": "active_phase" };
+            expressionAttributeValues = {
+              ":active_phase": req.body.active_phase,
+            };
+          } else {
+            updateExpression =
+              "set #active_phase=:active_phase,#ever_mint_started=:ever_mint_started";
+            expressionAttributeNames = {
+              "#active_phase": "active_phase",
+              "#ever_mint_started": ":ever_mint_started",
+            };
+            expressionAttributeValues = {
+              ":active_phase": req.body.active_phase,
+              ":ever_mint_started": req.body.ever_mint_started,
+            };
+          }
           const updatedParams = {
             TableName: "puffles",
             Key: {
               PK: `ADR#${req.user.address}`,
               SK: `ART#${req.body.artwork_id}`,
             },
-            UpdateExpression: "set #active_phase=:active_phase",
-            ExpressionAttributeNames: { "#active_phase": "active_phase" },
-            ExpressionAttributeValues: {
-              ":active_phase": req.body.active_phase,
-            },
+            UpdateExpression: updateExpression,
+            ExpressionAttributeNames: expressionAttributeNames,
+            ExpressionAttributeValues: expressionAttributeValues,
           };
           await DatabaseHelper.prototype.updateItems(updatedParams);
 

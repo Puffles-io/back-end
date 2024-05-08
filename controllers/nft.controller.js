@@ -111,34 +111,58 @@ exports.title = async (req, res) => {
           SK: `ART#${req.body.artwork_id}`,
         },
       };
-      if ((await Database.prototype.getItem(params)) === undefined) {
+      let nft = await Database.prototype.getItem(params);
+      if (nft === undefined) {
         res.status(200).json({
           status: true,
           message: "Artwork with given id doesnt exist",
         });
       } else {
+        let updateExpression = "";
+        let expressionAttributeNames = {};
+        let expressionAttributeValues = {};
+        if (Object.keys(nft.Item.delayed_reveal).length == 0) {
+          updateExpression =
+            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#is_revealed=:is_revealed";
+          expressionAttributeNames = {
+            "#title": "title",
+            "#URI": "URI",
+            "#URI_status": "URI_status",
+            "#is_revealed": "is_revealed",
+          };
+          expressionAttributeValues = {
+            ":title": req.body.title,
+            ":URI": req.body.title.toLowerCase().replace(/\s/g, ""),
+            ":URI_status": true,
+            ":is_revealed": false,
+          };
+        } else {
+          updateExpression =
+            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#delayed_reveal=:delayed_reveal";
+          expressionAttributeNames = {
+            "#title": "title",
+            "#URI": "URI",
+            "#URI_status": "URI_status",
+
+            "#delayed_reveal": "delayed_reveal",
+          };
+          expressionAttributeValues = {
+            ":title": req.body.title,
+            ":URI": req.body.title.toLowerCase().replace(/\s/g, ""),
+            ":URI_status": true,
+
+            ":delayed_reveal": req.body.delayed_reveal,
+          };
+        }
         const updatedParams = {
           TableName: "puffles",
           Key: {
             PK: `ADR#${req.user.address}`,
             SK: `ART#${req.body.artwork_id}`,
           },
-          UpdateExpression:
-            "set #title=:title,#URI=:URI,#URI_status=:URI_status,#delayed_reveal=:delayed_reveal",
-          ExpressionAttributeNames: {
-            "#title": "title",
-            "#URI": "URI",
-            "#URI_status": "URI_status",
-
-            "#delayed_reveal": "delayed_reveal",
-          },
-          ExpressionAttributeValues: {
-            ":title": req.body.title,
-            ":URI": req.body.title.toLowerCase().replace(/\s/g, ""),
-            ":URI_status": true,
-
-            ":delayed_reveal": req.body.delayed_reveal,
-          },
+          updateExpression: updateExpression,
+          ExpressionAttributeNames: expressionAttributeNames,
+          ExpressionAttributeValues: expressionAttributeValues,
         };
         await Database.prototype.updateItems(updatedParams);
         res.status(200).json({
