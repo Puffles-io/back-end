@@ -128,12 +128,14 @@ exports.title = async (req, res) => {
             "#title": "title",
             "#URI": "URI",
             "#URI_status": "URI_status",
+            "#delayed_reveal": "delayed_reveal",
             "#is_revealed": "is_revealed",
           };
           expressionAttributeValues = {
             ":title": req.body.title,
             ":URI": req.body.title.toLowerCase().replace(/\s/g, ""),
             ":URI_status": true,
+            ":delayed_reveal": req.body.delayed_reveal,
             ":is_revealed": false,
           };
         } else {
@@ -160,7 +162,7 @@ exports.title = async (req, res) => {
             PK: `ADR#${req.user.address}`,
             SK: `ART#${req.body.artwork_id}`,
           },
-          updateExpression: updateExpression,
+          UpdateExpression: updateExpression,
           ExpressionAttributeNames: expressionAttributeNames,
           ExpressionAttributeValues: expressionAttributeValues,
         };
@@ -173,6 +175,7 @@ exports.title = async (req, res) => {
       }
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Err" + err });
   }
 };
@@ -472,6 +475,45 @@ exports.metadataUpload = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: false, message: "Server Error" + err });
+  }
+};
+exports.acceptReveal = async (req, res) => {
+  try {
+    if (!Boolean(req.body.artwork_id)) {
+      res.status(200).json({ status: false, message: "Artwork ID missing" });
+    } else {
+      const params = {
+        TableName: "puffles",
+        Key: {
+          PK: `ADR#${req.user.address}`,
+          SK: `ART#${req.body.artwork_id}`,
+        },
+      };
+      let results = await Database.prototype.getItem(params);
+      if (results === undefined) {
+        res.status(200).json({
+          status: false,
+          message: "Files with given artwork id doesn't exist",
+        });
+      } else {
+        const updatedParams = {
+          TableName: "puffles",
+          Key: {
+            PK: `ADR#${req.user.address}`,
+            SK: `ART#${req.body.artwork_id}`,
+          },
+          UpdateExpression: "set #reveal_nft=:reveal_nft",
+          ExpressionAttributeNames: { "#reveal_nft": "reveal_nft" },
+          ExpressionAttributeValues: { ":reveal_nft": true },
+        };
+        await Database.prototype.updateItems(updatedParams);
+        res
+          .status(200)
+          .json({ status: true, message: "Added reveal_nft successfully" });
+      }
+    }
+  } catch (err) {
+    res.status(500).json({ status: false, message: "Server err" });
   }
 };
 exports.get_nfts = async (req, res) => {

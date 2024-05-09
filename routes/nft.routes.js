@@ -63,4 +63,9 @@ module.exports = (app) => {
     passport.authenticate("jwt", { session: false }),
     NFTController.uploadThumbnail
   );
+  app.put(
+    "/acceptReveal",
+    passport.authenticate("jwt", { session: false }),
+    NFTController.acceptReveal
+  );
 };
