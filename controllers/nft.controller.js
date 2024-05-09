@@ -121,7 +121,11 @@ exports.title = async (req, res) => {
         let updateExpression = "";
         let expressionAttributeNames = {};
         let expressionAttributeValues = {};
-        if (Object.keys(nft.Item.delayed_reveal).length == 0) {
+        console.log(nft.Item);
+        if (
+          !nft.Item.hasOwnProperty("delayed_reveal") ||
+          Object.keys(nft.Item.delayed_reveal).length == 0
+        ) {
           updateExpression =
             "set #title=:title,#URI=:URI,#URI_status=:URI_status,#is_revealed=:is_revealed";
           expressionAttributeNames = {
