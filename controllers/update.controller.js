@@ -378,7 +378,7 @@ class Update {
           let updateExpression = "";
           let expressionAttributeNames = {};
           let expressionAttributeValues = {};
-          if (results.Item.hasOwnProperty("ever_mint_started")) {
+          if (!req.body.hasOwnProperty("ever_mint_started")) {
             updateExpression = "set #active_phase=:active_phase";
             expressionAttributeNames = { "#active_phase": "active_phase" };
             expressionAttributeValues = {

@@ -506,7 +506,12 @@ exports.acceptReveal = async (req, res) => {
           },
         };
         await Database.prototype.updateItems(updatedParams);
-        res.status(200).json({ status: true, message: results.Item });
+        res
+          .status(200)
+          .json({
+            status: true,
+            message: "Updated delayed reveal successfully",
+          });
       }
     }
   } catch (err) {
