@@ -492,20 +492,21 @@ exports.acceptReveal = async (req, res) => {
           message: "Files with given artwork id doesn't exist",
         });
       } else {
+        results.Item.delayed_reveal["is_revealed"] = true;
         const updatedParams = {
           TableName: "puffles",
           Key: {
             PK: `ADR#${req.user.address}`,
             SK: `ART#${req.body.artwork_id}`,
           },
-          UpdateExpression: "set #reveal_nft=:reveal_nft",
-          ExpressionAttributeNames: { "#reveal_nft": "reveal_nft" },
-          ExpressionAttributeValues: { ":reveal_nft": true },
+          UpdateExpression: "set #delayed_reveal=:delayed_reveal",
+          ExpressionAttributeNames: { "#delayed_reveal": "delayed_reveal" },
+          ExpressionAttributeValues: {
+            ":delayed_reveal": results.Item.delayed_reveal,
+          },
         };
         await Database.prototype.updateItems(updatedParams);
-        res
-          .status(200)
-          .json({ status: true, message: "Added reveal_nft successfully" });
+        res.status(200).json({ status: true, message: results.Item });
       }
     }
   } catch (err) {
