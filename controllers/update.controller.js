@@ -390,7 +390,7 @@ class Update {
               "set #active_phase=:active_phase,#ever_mint_started=:ever_mint_started";
             expressionAttributeNames = {
               "#active_phase": "active_phase",
-              "#ever_mint_started": ":ever_mint_started",
+              "#ever_mint_started": "ever_mint_started",
             };
             expressionAttributeValues = {
               ":active_phase": req.body.active_phase,
