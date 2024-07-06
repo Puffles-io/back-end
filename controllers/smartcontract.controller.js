@@ -17,14 +17,13 @@ exports.smartcontract = async (req, res) => {
       ) {
         res.status(200).json({ status: false, message: "Missing Credentials" });
       } else {
-        req.body.ip = req.connection.remoteAddress;
         req.body.wallet_address = req.user.address;
         const params = {
           TableName: "puffles",
           Item: {
             PK: `ADR#${req.user.address}`,
             SK: `SMC#${req.body.artwork_id}`,
-            ip: req.connection.remoteAddress,
+            ip: req.body.ip,
             wallet_address: req.user.address,
             sale_date: req.body.sale_data,
             token_symbol: req.body.token_symbol,

@@ -49,7 +49,7 @@ exports.metadataUrls = async (req, res) => {
         SK: `ART#${id}`,
         metadataUrls: req.body.metadataUrls,
         timestamp: new Date().toISOString(),
-        ip: req.connection.remoteAddress,
+        ip: req.body.ip,
       },
     };
     await Database.prototype.addItem(params);
@@ -79,7 +79,7 @@ exports.uploadtoIPFS = async (req, res) => {
             filenames: files.files,
             cid: files.cid,
             timestamp: new Date().toISOString(),
-            ip: req.connection.remoteAddress,
+            ip: req.body.ip,
           },
         };
         await Database.prototype.addItem(params);
@@ -506,12 +506,10 @@ exports.acceptReveal = async (req, res) => {
           },
         };
         await Database.prototype.updateItems(updatedParams);
-        res
-          .status(200)
-          .json({
-            status: true,
-            message: "Updated delayed reveal successfully",
-          });
+        res.status(200).json({
+          status: true,
+          message: "Updated delayed reveal successfully",
+        });
       }
     }
   } catch (err) {
