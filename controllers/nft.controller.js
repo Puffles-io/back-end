@@ -338,7 +338,7 @@ exports.uploadThumbnail = async (req, res) => {
             },
           };
            await Database.prototype.updateItems(updatedParams);
-          bg = {image:"",type:""};
+          bg = "";
         }
         res.status(200).json({ status: true, thumbnail: thumbnail, bg: bg });
       }
