@@ -299,7 +299,7 @@ exports.uploadThumbnail = async (req, res) => {
           await Database.prototype.updateItems(updatedParams);
           thumbnail = filedata.location;
         }
-        if (req.body.bg.image.length) {
+        if (req.body.bg.image.length && req.body.bg.image!="removed") {
           let file = base64ToFileBlob(
             req.body.bg.image,
             `image.${req.body.bg.type}`
@@ -321,6 +321,24 @@ exports.uploadThumbnail = async (req, res) => {
           };
           await Database.prototype.updateItems(updatedParams);
           bg = filedata.location;
+        }
+        else if(req.body.bg.image=="removed"){
+          const updatedParams = {
+            TableName: "puffles",
+            Key: {
+              PK: `ADR#${req.user.address}`,
+              SK: `ART#${req.body.artwork_id}`,
+            },
+            UpdateExpression: "set #bg=:bg",
+            ExpressionAttributeNames: {
+              "#bg": "bg",
+            },
+            ExpressionAttributeValues: {
+              ":bg": {image:"",type:""},
+            },
+          };
+           await Database.prototype.updateItems(updatedParams);
+          bg = {image:"",type:""};
         }
         res.status(200).json({ status: true, thumbnail: thumbnail, bg: bg });
       }
