@@ -38,7 +38,7 @@ class DeleteNft {
     } catch (err) {
       console.log(err);
 
-      res.status(500).send("internal server error");
+      res.status(200).json({message:"server error"});
     }
   }
   async deletePlaceholderImage(req, res) {
