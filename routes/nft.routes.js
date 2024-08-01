@@ -4,12 +4,6 @@ const multer = require("multer");
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage });
 module.exports = (app) => {
-  app.post(
-    "/upload_v1",
-    passport.authenticate("jwt", { session: false }),
-    upload.array("file"),
-    NFTController.upload_v1
-  ),
     app.post(
       "/title",
       passport.authenticate("jwt", { session: false }),
