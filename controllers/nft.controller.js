@@ -12,30 +12,7 @@ const fsextra = require("fs-extra");
 const Database = require("../models/nft.model");
 const { uuid } = require("uuidv4");
 const path = require("path");
-
-exports.upload_v1 = async (req, res) => {
-  return new Promise(async function (resolve, reject) {
-    try {
-      if (!Boolean(req.body.artwork_id)) {
-        let id = writeFile(req.file, uuid());
-        res.status(200).json({ status: true, id: id });
-      } else {
-        let id = writeFile(req.file, req.body.artwork_id);
-        res.status(200).json({ status: true, id: id });
-      }
-      // let {cid,filename}= await uploadImage(req.body.file_url);
-      // let metadata={title:req.body.title,description:req.body.description,cid:cid,detailed_reveal:req.body.detailed_reveal,filename:filename}
-      // let metadata_url=await uploadJSON(metadata)
-      // let nft=new NFT({cid:metadata_url,address:req.user.address,ip:req.connection.remoteAddress,title:req.body.title})
-      // await nft.save()
-      // res.status(200).json({status:true,message:"NFT saved successfully"})
-    } catch (err) {
-      console.log("error: ", err);
-      error(err, req);
-      res.status(500).json({ message: "Error: " + err.toString() });
-    }
-  });
-};
+const axios=require('axios')
 
 exports.metadataUrls = async (req, res) => {
   if (!Boolean(req.body.metadataUrls)) {

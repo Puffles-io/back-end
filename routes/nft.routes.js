@@ -7,7 +7,7 @@ module.exports = (app) => {
   app.post(
     "/upload_v1",
     passport.authenticate("jwt", { session: false }),
-    upload.single("file"),
+    upload.array("file"),
     NFTController.upload_v1
   ),
     app.post(
